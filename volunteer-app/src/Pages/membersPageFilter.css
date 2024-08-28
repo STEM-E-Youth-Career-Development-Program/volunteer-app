@@ -1,0 +1,51 @@
+div {
+    width: 220px;
+    height: 100%;
+    position: fixed;
+    font-family: Inter;
+    border-right: 1px solid rgb(188, 188, 188);
+}
+
+fieldset {
+    border: none;
+    padding: 1rem;
+}
+
+h3 {
+    text-align: center;
+    font-weight: 500;
+    font-size: 22px;
+}
+
+p {
+    font-weight: 300;
+}
+
+button:hover {
+    text-decoration: underline;
+}
+
+button {
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+button[name="Yes"]{
+    color: white;
+    background-color: #049F14;
+    border-radius: 11px;
+    border: none;
+    font-weight: 600;
+    width: 45px;
+    height: 25px;
+}
+
+button[name="No"]{
+    color: black;
+    background-color: #FF0000;
+    border-radius: 11px;
+    border: none;
+    font-weight: 600;
+    width: 45px;
+    height: 25px;
+}
