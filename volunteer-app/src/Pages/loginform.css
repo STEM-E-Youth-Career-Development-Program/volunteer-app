@@ -14,15 +14,6 @@ h2 {
     text-align: center;
 }
 
-b {
-    color: dimgray;
-    text-decoration-color: dimgray;
-}
-
-a {
-    text-decoration-color: dimgray;
-}
-
 div {
     display: flex;
     flex-direction: column;
@@ -33,22 +24,6 @@ div {
     margin: auto;
     width: 20%;
     min-width: 320px;
-}
-
-input {
-    padding: 0.5rem;
-    margin: 0.5rem;
-    border: 1px solid lightgray;
-    border-radius: 7px;
-    font-size: medium;
-    font-weight: 540;
-}
-
-input:focus {
-    border: 1px solid dimgray;
-    box-shadow: 0px 0px 5px 5px #cedcf2;
-    animation: fadeIn ease 1s;
-    outline: none;
 }
 
 @keyframes fadeIn {
@@ -62,10 +37,27 @@ input:focus {
 }
 
 button {
+    background-color: #5865F2;
+    color: #fff;
     border: none;
-    background-color: black;
-    color: white;
-    font-size: small;
-    padding: 0.7rem;
-    border-radius: 7px;
+    padding: 1em 2em;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em; /* Adjusted font-size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
 }
+
+.button:hover {
+    background-color: #5b6eae;
+}
+
+.button img {
+    width: 30px;
+    height: px;
+    margin-right: px;
+}
+
