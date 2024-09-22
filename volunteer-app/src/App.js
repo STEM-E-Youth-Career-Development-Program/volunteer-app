@@ -10,6 +10,10 @@ import './App.css';
 
 import Login from "./Pages/loginform.js"
 import HomePage from "./Pages/homePage.js"
+import AccPageOthers from "./Pages/AccPageOthers.js";
+import SamplePage from "./Pages/SamplePage.js";
+import SupportForm from "./Pages/Supportform.js";
+import ErrorPage from "./Pages/ErrorPage.js"
 
 function App() {
     const [session, setSession] = useState([]);
@@ -19,6 +23,10 @@ function App() {
             <Routes>
                 <Route path="/" element={login} />
                 <Route path="/home" element={<HomePage />}/>
+                <Route path="/userpage" element={<AccPageOthers />}/>
+                <Route path="/samplepage" element={<SamplePage />}/>
+                <Route path="/supportform" element={<SupportForm />}/>
+                <Route path="/error" element={<ErrorPage />}/>
             </Routes>
         </Router>
     </>;

@@ -1,0 +1,52 @@
+.sample {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%;
+}
+.sample .container {
+    display: flex;
+    height: 100%;
+}
+.sample .sidebar {
+    width: 200px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    overflow-y: auto;
+}
+.sample .sidebar h3 {
+    margin-top: 0;
+}
+.sample .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+.sample .sidebar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+.sample .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+.sample .resource-container {
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.sample img {
+    max-width: 100%;
+    height: auto;
+}
+.sample .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
