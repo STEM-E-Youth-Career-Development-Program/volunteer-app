@@ -1,11 +1,11 @@
-h2 {
+.login h2 {
     font-family: sans-serif;
     text-align: center;
     word-wrap: normal;
     margin-top: 150px;
 }
 
-.smalltext {
+.login .smalltext {
     font-family: sans-serif;
     color: gray;
     margin: 0.5rem;
@@ -14,13 +14,13 @@ h2 {
     text-align: center;
 }
 
-div {
+.login div {
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.center {
+.login .center {
     margin: auto;
     width: 20%;
     min-width: 320px;
@@ -36,7 +36,7 @@ div {
     }
 }
 
-button {
+.login button {
     background-color: #5865F2;
     color: #fff;
     border: none;
@@ -51,11 +51,11 @@ button {
     margin-left: 10px;
 }
 
-.button:hover {
+.login .button:hover {
     background-color: #5b6eae;
 }
 
-.button img {
+.login .button img {
     width: 30px;
     height: px;
     margin-right: px;

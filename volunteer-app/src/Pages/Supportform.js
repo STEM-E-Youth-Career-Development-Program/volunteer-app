@@ -2,7 +2,7 @@ import "./Supportform.css"
 
 const SupportForm = () => {
     return ( 
-        <main>
+        <main className="support">
             <h1>Something's Off? Let us know here!</h1>
             <form>
                 <label for="email">Email ID</label>

@@ -1,5 +1,4 @@
-﻿img
-{
+﻿.userpage img {
     max-height: 250px;
     max-width: 250px;
     height: 20%;
@@ -9,15 +8,14 @@
     clip-path: circle(47%);
  
 }
-ul {
+.userpage ul {
     list-style-type: none;
     max-width: 320px;
     width: 80%;
     min-width: 220px;
     padding-left: 0px;
 }
-li 
-{
+.userpage li {
     padding: 0.5rem;
     margin: 1rem 0.5rem;
     border: 1px solid lightgray;
@@ -27,14 +25,13 @@ li
     color: dimgray;
     
 }
-.content
-{
+.userpage .content {
     display:flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.container {
+.userpage .container {
     border: 5px solid #cedcf2;
     border-radius: 20px;
     padding: 0px;
@@ -46,7 +43,7 @@ li
     background-color: white;
 }
 
-dialog {
+.userpage dialog {
     border: none;
     outline: none;
     width: 100%;
@@ -57,7 +54,7 @@ dialog {
     padding: 0rem;
 }
 
-dialog[open] {
+.userpage dialog[open] {
     animation: fade-in 1000ms forwards;
     background: rgba(0,0,0,0.3);
 }
@@ -73,7 +70,7 @@ dialog[open] {
     }
 }
 
-.close
+.userpage .close
 {
     width: 90%;
     padding:1rem 2rem;

@@ -9,7 +9,7 @@ const UserProfile = () => {
   const closeModal = () => setIsOpen(false);
 
   return (
-    <div>
+    <div ClassName="userpage">
       <h4 style={{ fontFamily: 'sans-serif' }} id="toggle" onClick={showModal}>
         User1234
       </h4>
