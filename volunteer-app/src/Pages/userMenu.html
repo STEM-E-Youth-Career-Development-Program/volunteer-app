@@ -1,37 +1,46 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="userMenu.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <title>user menu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM-QE Dashboard</title>
+    <link rel="stylesheet" href="userMenu.css">
 </head>
 <body>
-    <div class="dropdown">
-        <button>Dropdown</button>
-        <div class="dropdown-content">
-            <div class="dropdown-row">
-                <span class="material-symbols-outlined">home</span>
-                <a href="#">Account</a>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="stemqe-logo.png" alt="STEM-QE Logo">
             </div>
-            <div class="dropdown-row">
-                <span class="material-symbols-outlined">support_agent</span>
-                <a href="#">Support</a>
-            </div>
-            <div class="dropdown-row">
-                <span class="material-symbols-outlined">live_help</span>
-                <a href="#">FAQ</a>
-            </div>
-            <div class="dropdown-row">
-                <span class="material-symbols-outlined">contact_mail</span>
-                <a href="#">Contact us</a>
-            </div>
-            <div class="dropdown-row">
-                <span class="material-symbols-outlined">logout</span>
-                <a href="#">Logout</a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Members</a></li>
+                    <li><a href="#">Access Management</a></li>
+                    <li><a href="#">Admin Console</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <div class="user-icon" onclick="toggleDropdown()">
+                    <img src="user-icon.png" alt="User Icon">
+                </div>
+                <div class="dropdown" id="dropdownMenu">
+                    <a href="#">Account</a>
+                    <a href="#">Support</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Logout</a>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main content of the page -->
+    <main>
+        <!-- Content goes here -->
+    </main>
+
+    <script src="userMenu.js"></script>
 </body>
 </html>
