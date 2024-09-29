@@ -16,7 +16,7 @@ const UserProfile = () => {
 
       {isOpen && (
         <dialog id="modal" open>
-          <div className="container">
+          <div className="container-user">
             <span className="close" onClick={closeModal}>&times;</span>
             <div className="content">
               <img alt="profile pic" src="./static/slimes2.jpg" />

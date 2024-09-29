@@ -5,7 +5,7 @@ import Oauth from './../DiscordAuth.js'
 const auth = new Oauth();
 function Login() {
     return (
-    <div ClassName='login'>
+    <div className="login">
         <div className="center">
             <h2>Log in</h2>
             <form>

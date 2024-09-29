@@ -1,4 +1,4 @@
-﻿.userpage img {
+﻿.container-user img {
     max-height: 250px;
     max-width: 250px;
     height: 20%;
@@ -8,14 +8,14 @@
     clip-path: circle(47%);
  
 }
-.userpage ul {
+.container-user ul {
     list-style-type: none;
     max-width: 320px;
     width: 80%;
     min-width: 220px;
     padding-left: 0px;
 }
-.userpage li {
+.container-user li {
     padding: 0.5rem;
     margin: 1rem 0.5rem;
     border: 1px solid lightgray;
@@ -25,13 +25,13 @@
     color: dimgray;
     
 }
-.userpage .content {
+.container-user .content {
     display:flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.userpage .container {
+ .container-user {
     border: 5px solid #cedcf2;
     border-radius: 20px;
     padding: 0px;
@@ -43,7 +43,7 @@
     background-color: white;
 }
 
-.userpage dialog {
+ dialog {
     border: none;
     outline: none;
     width: 100%;
@@ -54,7 +54,7 @@
     padding: 0rem;
 }
 
-.userpage dialog[open] {
+ dialog[open] {
     animation: fade-in 1000ms forwards;
     background: rgba(0,0,0,0.3);
 }
@@ -70,7 +70,7 @@
     }
 }
 
-.userpage .close
+ .close
 {
     width: 90%;
     padding:1rem 2rem;
