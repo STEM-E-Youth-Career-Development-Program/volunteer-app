@@ -1,0 +1,63 @@
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:center;
+    width: 20%;
+    min-width: 1075px;
+    margin: auto;
+}
+
+h1
+{
+    font-family:Inter;
+    text-align:center;
+    font-size:40px;
+    font-weight: 600;
+}
+
+p
+{
+    width:100%;
+    font-family:Inter;
+    line-height: 1.5;
+    font-size:24px;
+    font-weight: 500;
+}
+
+.justifiedText
+{
+    text-align: justify;
+    text-align-last: justify;
+    line-height: 1.5;
+}
+
+.bold
+{
+    margin:0;
+    font-weight:700;
+}
+
+.space-before 
+{
+    padding-left: 10px;
+}
+
+.fix-space
+{
+    padding-left: 37px;
+}
+
+.button
+{ 
+    margin-top:25px;
+    width: 166px;
+    height: 60px;
+    border: none;
+    background-color: black;
+    color: white;
+    font-size:30px;
+    padding:0.7rem;
+    border-radius:8px;
+    text-align: center;
+}

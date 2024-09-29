@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="AccPageOthers.css"/>
+    <title>Account popup</title>
+</head>
+<body>
+    <h4 style="font-family:sans-serif;" id="toggle" onclick="modal.show()">User1234</h4>
+
+    <dialog id="modal">
+        <div class="container" >
+            <span class="close" onclick="modal.close()">&times;</span>
+            <div class="content">
+                <img alt="profile pic" src="static/slimes2.jpg" />
+                <ul>
+                    <li>First Name</li>
+                    <li>Last Name</li>
+                    <li>Role</li>
+                    <li>Discord ID</li>
+                </ul>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>
