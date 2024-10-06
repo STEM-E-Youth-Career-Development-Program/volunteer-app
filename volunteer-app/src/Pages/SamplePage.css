@@ -26,6 +26,8 @@
     border-bottom: 1px solid #ddd;
 }
 .sample .main-content {
+    display:flex;
+    flex-direction: column;
     flex-grow: 1;
     padding: 20px;
     overflow-y: auto;
