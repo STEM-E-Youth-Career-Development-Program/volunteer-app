@@ -1,22 +1,10 @@
 // JavaScript source code
 import "./members.css";
+import NavBarAdmin from "./navBarAdmin";
 function MemberTable() {
     return (
         <>
-            <div class="nav-bar" id="nav-bar">
-                <div class="logo">
-                    <img src="steme-logo.webp" alt="STEM-E Logo"></img>
-                </div>
-                <div class="menu">
-                    <span class="menu-item"><a href="/home">Home</a></span>
-                    <span class="menu-item"><a href="/home">Resources</a></span>
-                    <span class="menu-item"><a href="/members">Members</a></span>
-                    <span class="menu-item"><a href="/access">Access Management</a></span>
-                </div>
-                <div class="account">
-                    <i class="fa-solid fa-circle-user fa-4x"></i>
-                </div>
-            </div>
+            <NavBarAdmin />
             <div class="access-table">
                 <table>
                     <tr>
