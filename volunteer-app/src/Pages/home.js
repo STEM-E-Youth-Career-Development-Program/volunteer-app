@@ -4,6 +4,7 @@ import UserMenu from './userMenu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faFile, faHouse, faCalendarDays, faMobile, faGlobe, faMagnifyingGlass, faUsers, faMap, faChalkboardUser, faGamepad, faRobot, faHashtag, faInfo, faPhone, faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
 import { faFacebookF, faInstagram, faTwitter, faYoutube, faDiscord, faTiktok, faLinkedinIn, faFlickr, faSpotify } from '@fortawesome/free-brands-svg-icons';
+import NavBarAdmin from './navBarAdmin';
 
 const data = {
     stemeUpdates: [
@@ -19,24 +20,6 @@ const data = {
         "Point 1", "Point 2", "Point 3", "Point 4", "Point 5"
     ]
 };
-
-const NavBar = () => (
-    <div className="nav-bar" id="nav-bar">
-        <div className="logo">
-            <img src="steme-logo.webp" alt="STEM-E Logo" />
-        </div>
-        <div className="menu">
-            <span className="menu-item"><a href="#">Home</a></span>
-            <span className="menu-item"><a href="#">Resources</a></span>
-            <span className="menu-item"><a href="/members">Members</a></span>
-            <span className="menu-item"><a href="/access">Access Management</a></span>
-            <span className="menu-item"><a href="#">Admin Console</a></span>
-        </div>
-        <div className="account">
-            <UserMenu />
-        </div>
-    </div>
-);
 
 const Updates = ({ title, points }) => (
     <div className="update-section">
@@ -103,7 +86,7 @@ const MainContent = () => (
 
 const Home = () => (
     <div>
-        <NavBar />
+        <NavBarAdmin />
         <MainContent />
     </div>
 );
