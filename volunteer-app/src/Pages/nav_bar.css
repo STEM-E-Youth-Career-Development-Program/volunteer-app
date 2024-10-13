@@ -11,6 +11,7 @@ body {
     background-color: #e6e6e6;
     padding: 10px 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: 2rem;
 }
 
 .logo img {
@@ -34,6 +35,10 @@ body {
     display: flex;
     padding-right: 25px;
     gap: 40px
+}
+
+.menu a{
+    color: black;
 }
 
 .menu-item {
