@@ -1,28 +1,30 @@
 import "./userMenu.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleUser, faHouse, faCircleInfo, faEnvelope, faHeadset, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 function UserMenu() {
     return (
-        <div class="dropdown">
-            <button class="dropbtn">User</button>
-            <div class="dropdown-content">
-                <div class="dropdown-row">
-                    <span class="material-symbols-outlined">home</span>
+        <div className="dropdown">
+            <FontAwesomeIcon icon={faCircleUser} />
+            <div className="dropdown-content">
+                <div className="dropdown-row">
+                    <FontAwesomeIcon icon={faHouse} />
                     <a href="#">Account</a>
                 </div>
-                <div class="dropdown-row">
-                    <span class="material-symbols-outlined">support_agent</span>
+                <div className="dropdown-row">
+                    <FontAwesomeIcon icon={faHeadset} />
                     <a href="/supportform">Support</a>
                 </div>
-                <div class="dropdown-row">
-                    <span class="material-symbols-outlined">live_help</span>
+                <div className="dropdown-row">
+                    <FontAwesomeIcon icon={faCircleInfo} />
                     <a href="#">FAQ</a>
                 </div>
-                <div class="dropdown-row">
-                    <span class="material-symbols-outlined">contact_mail</span>
+                <div className="dropdown-row">
+                    <FontAwesomeIcon icon={faEnvelope} />
                     <a href="#">Contact us</a>
                 </div>
-                <div class="dropdown-row">
-                    <span class="material-symbols-outlined">logout</span>
-                    <a href="/">Logout</a>
+                <div className="dropdown-row">
+                    <FontAwesomeIcon icon={faRightFromBracket} />
+                    <a href="/logout">Logout</a>
                 </div>
             </div>
         </div>
