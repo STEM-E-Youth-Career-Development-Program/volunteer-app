@@ -38,9 +38,9 @@ const AccessManagement = () => {
           <img src="steme-logo.webp" alt="STEM-E Logo" />
         </div>
         <div className="menu">
-          <span className="menu-item">Home</span>
-          <span className="menu-item">Resources</span>
-          <span className="menu-item">Access Management</span>
+          <span className="menu-item"><a href="/home">Home</a></span>
+          <span className="menu-item"><a href="/home">Resources</a></span>
+          <span className="menu-item"><a href="/access">Access Management</a></span>
         </div>
         <div className="account">
           <i className="fa-solid fa-circle-user fa-4x"></i>

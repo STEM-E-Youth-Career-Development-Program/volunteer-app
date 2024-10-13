@@ -1,7 +1,9 @@
 import React from 'react';
 import './home.css'; // Ensure to keep your CSS file
+import UserMenu from './userMenu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser, faFile, faHouse, faCalendarDays, faMobile, faGlobe, faMagnifyingGlass, faUsers, faMap, faChalkboardUser, faGamepad, faRobot, faHashtag, faFacebookF, faInstagram, faTwitter, faYoutube, faDiscord, faTiktok, faLinkedinIn, faFlickr, faSpotify, faInfo, faPhone, faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faFile, faHouse, faCalendarDays, faMobile, faGlobe, faMagnifyingGlass, faUsers, faMap, faChalkboardUser, faGamepad, faRobot, faHashtag, faInfo, faPhone, faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
+import { faFacebookF, faInstagram, faTwitter, faYoutube, faDiscord, faTiktok, faLinkedinIn, faFlickr, faSpotify } from '@fortawesome/free-brands-svg-icons';
 
 const data = {
     stemeUpdates: [
@@ -24,11 +26,14 @@ const NavBar = () => (
             <img src="steme-logo.webp" alt="STEM-E Logo" />
         </div>
         <div className="menu">
-            <span className="menu-item">Home</span>
-            <span className="menu-item">Resources</span>
+            <span className="menu-item"><a href="#">Home</a></span>
+            <span className="menu-item"><a href="#">Resources</a></span>
+            <span className="menu-item"><a href="/members">Members</a></span>
+            <span className="menu-item"><a href="/access">Access Management</a></span>
+            <span className="menu-item"><a href="#">Admin Console</a></span>
         </div>
         <div className="account">
-            <FontAwesomeIcon icon={faCircleUser} size="4x" />
+            <UserMenu />
         </div>
     </div>
 );
@@ -55,12 +60,12 @@ const QuickLinks = () => (
         <h5><FontAwesomeIcon icon={faMobile} /> STEME Apps</h5>
         <ul>
             <li><a href="https://www.steme.org/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faGlobe} /> Website</a></li>
-            <li><FontAwesomeIcon icon={faMagnifyingGlass} /> Career App</li>
-            <li><FontAwesomeIcon icon={faUsers} /> Member App</li>
-            <li><FontAwesomeIcon icon={faMap} /> Map App</li>
-            <li><FontAwesomeIcon icon={faChalkboardUser} /> Tutor App</li>
-            <li><FontAwesomeIcon icon={faGamepad} /> Game App</li>
-            <li><FontAwesomeIcon icon={faRobot} /> Note Sage App</li>
+            <li><FontAwesomeIcon icon={faMagnifyingGlass} /> <a href="/samplepage">Career App</a></li>
+            <li><FontAwesomeIcon icon={faUsers} /> <a href="/samplepage">Member App</a></li>
+            <li><FontAwesomeIcon icon={faMap} /> <a href="/samplepage">Map App</a></li>
+            <li><FontAwesomeIcon icon={faChalkboardUser} /> <a href="/samplepage">Tutor App</a></li>
+            <li><FontAwesomeIcon icon={faGamepad} /> <a href="/samplepage">Game App</a></li>
+            <li><FontAwesomeIcon icon={faRobot} /> <a href="/samplepage">Note Sage App</a></li>
         </ul>
         <h5><FontAwesomeIcon icon={faHashtag} /> STEME Social Media</h5>
         <ul>
@@ -74,7 +79,7 @@ const QuickLinks = () => (
             <li><a href="https://www.flickr.com/photos/steme-ycdp/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faFlickr} /> Flickr</a></li>
             <li><a href="https://open.spotify.com/show/3ScxdUY1xh4FtApzh8NqOc" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faSpotify} /> Spotify</a></li>
         </ul>
-        <h5><FontAwesomeIcon icon={faListUl} /> Others</h5>
+        <h5><FontAwesomeIcon icon={faInfo} /> Others</h5>
         <ul>
             <li><FontAwesomeIcon icon={faInfo} /> FAQs</li>
             <li><FontAwesomeIcon icon={faPhone} /> Contact Us</li>

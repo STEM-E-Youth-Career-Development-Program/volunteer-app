@@ -1,27 +1,32 @@
-function toggleDropdown() {
-    var dropdown = document.getElementById("dropdownMenu");
-    if (dropdown.classList.contains("show")) {
-        dropdown.classList.remove("show");
-        setTimeout(() => {
-            dropdown.style.display = "none";
-        }, 300); // Time should match the transition duration
-    } else {
-        dropdown.style.display = "flex";
-        setTimeout(() => {
-            dropdown.classList.add("show");
-        }, 10); // Delay to ensure the display: flex is applied before adding the animation
-    }
+import "./userMenu.css"
+function UserMenu() {
+    return (
+        <div class="dropdown">
+            <button class="dropbtn">User</button>
+            <div class="dropdown-content">
+                <div class="dropdown-row">
+                    <span class="material-symbols-outlined">home</span>
+                    <a href="#">Account</a>
+                </div>
+                <div class="dropdown-row">
+                    <span class="material-symbols-outlined">support_agent</span>
+                    <a href="/supportform">Support</a>
+                </div>
+                <div class="dropdown-row">
+                    <span class="material-symbols-outlined">live_help</span>
+                    <a href="#">FAQ</a>
+                </div>
+                <div class="dropdown-row">
+                    <span class="material-symbols-outlined">contact_mail</span>
+                    <a href="#">Contact us</a>
+                </div>
+                <div class="dropdown-row">
+                    <span class="material-symbols-outlined">logout</span>
+                    <a href="/">Logout</a>
+                </div>
+            </div>
+        </div>
+    );
 }
 
-// Close the dropdown if clicked outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.user-icon img')) {
-        var dropdown = document.getElementById("dropdownMenu");
-        if (dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-            setTimeout(() => {
-                dropdown.style.display = "none";
-            }, 300);
-        }
-    }
-};
+export default UserMenu;
