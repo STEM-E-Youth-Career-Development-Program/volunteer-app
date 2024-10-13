@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './access_management.css';
+import NavBarAdmin from './navBarAdmin';
 
 const initialData = [
   { firstName: 'Intern 1', lastName: 'L1', email: 'intern1@gmail.com', discordID: 'intern1', isCoordinator: true, isAdmin: false },
@@ -31,21 +32,9 @@ const AccessManagement = () => {
     if (page > 1) setPage(page - 1);
   };
 
-  return (
-    <div className="access-management">
-      <div className="nav-bar" id="nav-bar">
-        <div className="logo">
-          <img src="steme-logo.webp" alt="STEM-E Logo" />
-        </div>
-        <div className="menu">
-          <span className="menu-item"><a href="/home">Home</a></span>
-          <span className="menu-item"><a href="/home">Resources</a></span>
-          <span className="menu-item"><a href="/access">Access Management</a></span>
-        </div>
-        <div className="account">
-          <i className="fa-solid fa-circle-user fa-4x"></i>
-        </div>
-      </div>
+    return (
+     <div>
+     <NavBarAdmin />
 
       <div className="access-table">
         <table>
