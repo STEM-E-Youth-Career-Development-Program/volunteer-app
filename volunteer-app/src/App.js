@@ -27,7 +27,6 @@ function App() {
         }
     }, []);
     const login = <Authenticate session={session} setSession={setSession} />
-    console.log(session)
     return <>
         <Router>
             <Routes>
