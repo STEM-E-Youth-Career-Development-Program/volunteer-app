@@ -1,3 +1,4 @@
+import { db, collection, getDocs } from "./index.js"
 const { google } = require('googleapis');
 const { OAuth2 } = require('google-auth-library');
 
@@ -21,12 +22,15 @@ const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 // Spreadsheet ID (find this in the URL of the Google Sheets document)
 const spreadsheetId = 'SPREADSHEET-ID';
 
-async function writeMemberToSheet(member) {
+export async function writeMemberToSheet(member) {
+    if (member.timesheetCreated) {
+        console.log(`${member.name}'s timesheet has already been created.`);
+        return; 
+    }
+
     // Define the row to add - TO BE CHANGED WITH ACTUAL VALUES LATER ON
     const newRow = [
       member.name,
-      member.date,
-      member.hoursWorked
     ];
   
     try {
@@ -38,6 +42,14 @@ async function writeMemberToSheet(member) {
         resource: {
           values: [newRow]
         }
+      });
+  
+      console.log(`Timesheet added for ${member.name}!`);
+
+      // After adding the member to the Google Sheets, mark as 'timesheetCreated' in Firestore
+      const memberRef = doc(db, "members", member.id); //unique id?
+      await updateDoc(memberRef, {
+        timesheetCreated: true
       });
   
       console.log(`Timesheet added for ${member.name}!`);

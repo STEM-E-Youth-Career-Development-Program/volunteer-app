@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
 import { db, collection, getDocs } from "../index.js"
+import { writeMemberToSheet } from '../sheets.js';
 
 function MemberTable() {
     const [members, setMembers] = useState([]);
@@ -18,6 +19,14 @@ function MemberTable() {
 
         fetchMembers();
     }, []);
+
+    const handleSave = () => {
+        console.log("Saving members to sheet...");
+        // Call writeMemberToSheet with the members data
+        members.forEach(member => {
+            writeMemberToSheet(member);
+        });
+    };
 
     return (
         <>
@@ -268,7 +277,7 @@ function MemberTable() {
                         <span class="page-number" id="pageNumber">Page 1</span>
                         <button>Next</button>
                     </div>
-                    <button class="save-button">Save</button>
+                    <button class="save-button" onClick={handleSave}>Save</button>
                 </div>
             </div>
         </>
