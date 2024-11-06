@@ -1,7 +1,24 @@
 // JavaScript source code
+import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
+import { db, collection, getDocs } from "../index.js"
+
 function MemberTable() {
+    const [members, setMembers] = useState([]);
+
+    // Fetch data from Firestore when the component mounts
+    useEffect(() => {
+        const fetchMembers = async () => {
+            const membersCollection = collection(db, "members"); // Get reference to 'members' collection
+            const membersSnapshot = await getDocs(membersCollection); // Get the documents
+            const membersData = membersSnapshot.docs.map((doc) => doc.data()); // Map through docs to extract data
+            setMembers(membersData);
+        };
+
+        fetchMembers();
+    }, []);
+
     return (
         <>
             <NavBarAdmin />
@@ -238,6 +255,12 @@ function MemberTable() {
                         <td>08-16-2024</td>
                         <td>Yes</td>
                     </tr>
+                    { /* 
+                    REPLACE WITH ACTUAL VALUES WITHIN THE FIRESTORE
+                    {members.map((member, index) => (
+                        <td key={index}>{member.firstName} {member.lastName}</td>
+                    ))}
+                    */}
                 </table>
                 <div class="table-footer">
                     <div class="pagination">
