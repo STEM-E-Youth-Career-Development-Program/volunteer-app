@@ -1,3 +1,4 @@
+/*
 import { db, collection, getDocs } from "./index.js"
 const { google } = require('googleapis');
 const { OAuth2 } = require('google-auth-library');
@@ -58,3 +59,4 @@ export async function writeMemberToSheet(member) {
     }
 }
   
+*/
