@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
 import { db, collection, getDocs } from "../index.js"
-import { writeMemberToSheet } from '../sheets.js';
+import writeToGoogleSheet from '../sheets.js';
+
 
 function MemberTable() {
     const [members, setMembers] = useState([]);
@@ -20,17 +21,32 @@ function MemberTable() {
         fetchMembers();
     }, []);
 
-
-
-    /*
-    const handleSave = () => {
+    const createTimesheet = async () => {
         console.log("Saving members to sheet...");
         // Call writeMemberToSheet with the members data
-        members.forEach(member => {
-            writeMemberToSheet(member);
-        });
+        const data = members.map(member => [
+            member.name?.split(" ")[0],       // First Name
+            member.name?.split(" ")[1],       // Last Name
+            member.email,                     // Email
+            member.discordID,                 // Discord ID
+            member.inServer ? "Yes" : "No",   // Orientation Attended?
+            member.signedWaiver ? "Yes" : "No", // Waiver Signed?
+            member.inTimeSheet ? "Yes" : "No", // Time Sheet Created?
+            member.startDate || "N/A",        // Internship Start Date
+            member.paused ? "Yes" : "No"      // Paused Internship?
+        ]);
+
+        const SPREADSHEET_ID = process.env.REACT_APP_SPREADSHEET_ID;
+        const range = "Sheet1!A1"
+
+        try {
+            const message = await writeToGoogleSheet(SPREADSHEET_ID, range, data);
+            alert(message);
+        } catch (error) {
+            alert("Error writing to sheet: " + error.message);
+        }
     };
-    */
+
 
     return (
         <>
@@ -72,7 +88,7 @@ function MemberTable() {
                         <span className="page-number" id="pageNumber">Page 1</span>
                         <button>Next</button>
                     </div>
-                    <button className="save-button" >Save</button> 
+                    <button className="save-button" onClick={createTimesheet}>Create Timesheets</button> 
                 </div>
             </div>
         </>
