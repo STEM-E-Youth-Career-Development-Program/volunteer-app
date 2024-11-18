@@ -19,13 +19,16 @@ const sheets = google.sheets({ version: "v4", auth });
 
 // API endpoint to write data to Google Sheets
 app.post("/api/write-to-sheet", async (req, res) => {
+    const ORIGINAL_SHEET = "Summary";
+    const PVSA_SHEET = "PVSA";
+
     const { spreadsheetId, name } = req.body;  // name is a 2D array of names 
 
     try {
         console.log("Received name array:", name);  // Log the received data
 
-        // 1. Find the first empty row in the existing sheet (Sheet1)
-        const range = "Sheet1!A:A"; 
+        // 1. Find the first empty row in the existing sheet 
+        const range = `${ORIGINAL_SHEET}!A:A`; 
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId,
             range,
@@ -83,7 +86,7 @@ app.post("/api/write-to-sheet", async (req, res) => {
         // 6. Write the data to the sheet
         await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `Sheet1!A${firstEmptyRow}`, // Write starting at the first empty row
+            range: `${ORIGINAL_SHEET}!A${firstEmptyRow}`, // Write starting at the first empty row
             valueInputOption: "USER_ENTERED", // Allow formulas
             resource: { values: rowsToWrite },
         });
