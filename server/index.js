@@ -61,13 +61,51 @@ app.post("/api/write-to-sheet", async (req, res) => {
         // 4. Get the sheetId of each newly created sheet (for hyperlinks)
         const sheetIds = addSheetResponse.data.replies.map(reply => reply.addSheet.properties.sheetId);
 
-        // 5. Prepare the data for each row (including the A1 cell from the created sheet)
+        // 5. Populate (each sheet) with calendar template
+        const MONTHS = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December",
+        ];
+        
+        await Promise.all(
+            sheetIds.map(async (sheetId, index) => {
+                const personName = name[index][0]; 
+        
+                // Calendar structure 
+                const calendarData = [
+                    [personName, "REMEMBER: Include any time for meetings, calls, events, trainings, computer research, and work"], // Name and reminder
+                    ["Date", ...MONTHS], // Header row for months
+                    ...Array.from({ length: 31 }, (_, i) => [i + 1, ...Array(12).fill("")]), // Dates 1–31 with empty columns for months
+                ];
+        
+                // Summation rows (total hours)
+                const totalRow = [
+                    "TOTAL", 
+                    ...MONTHS.map((_, colIndex) => `=SUM(${String.fromCharCode(66+colIndex)}3:${String.fromCharCode(66+colIndex)}33)`),
+                ];
+                const yearlyTotalRow = [...Array(11).fill(""), "Yearly Total", `=SUM(B34:M34)`];
+        
+                calendarData.push(totalRow);
+                calendarData.push(yearlyTotalRow); 
+        
+                // Write the table to the new sheet
+                const range = `'${personName}'!A1`; 
+                await sheets.spreadsheets.values.update({
+                    spreadsheetId,
+                    range,
+                    valueInputOption: "USER_ENTERED", 
+                    resource: { values: calendarData },
+                });
+            })
+        );
+        
+
+        // 6. Prepare the data for each row (including the A1 cell from the created sheet)
         const rowsToWrite = sheetIds.map((sheetId, index) => {
             const personName = name[index][0]; 
             const hyperlink = `=HYPERLINK("https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}", "${personName}")`;
 
-            // TO BE CHANGED TO SUM OF HOURS
-            const valueFromA1 = `='${personName}'!A1`; 
+            const totalHours = `='${personName}'!M35`; 
             const currentDate = new Date().toLocaleDateString();
             const todayFormula = "=TODAY()";
             const weeknumFormula = `=WEEKNUM(D${firstEmptyRow+index}-C${firstEmptyRow+index},1)`;
@@ -75,7 +113,7 @@ app.post("/api/write-to-sheet", async (req, res) => {
 
             return [
                 hyperlink,
-                valueFromA1,
+                totalHours,
                 currentDate,
                 todayFormula,
                 weeknumFormula,
@@ -83,7 +121,7 @@ app.post("/api/write-to-sheet", async (req, res) => {
             ];
         });
 
-        // 6. Write the data to the sheet
+        // 7. Write the data to the sheet
         await sheets.spreadsheets.values.update({
             spreadsheetId,
             range: `${ORIGINAL_SHEET}!A${firstEmptyRow}`, // Write starting at the first empty row
@@ -97,9 +135,11 @@ app.post("/api/write-to-sheet", async (req, res) => {
         });
     } catch (error) {
         console.error("Error writing to Google Sheets:", error);
+        /*
         res.status(500).json({
             error: `Failed to write to Google Sheets: ${error.message}`,
         });
+        */
     }
 });
 
