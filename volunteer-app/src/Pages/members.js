@@ -5,8 +5,6 @@ import { db, collection, getDocs } from "../index.js"
 import writeToGoogleSheet from '../sheets.js';
 
 
-
-
 function MemberTable() {
    const [members, setMembers] = useState([]);
 
@@ -29,7 +27,7 @@ function MemberTable() {
        console.log("Saving members to sheet...");
        // Call writeMemberToSheet with the members data
        const data = members
-           .filter(member => !member.inTimeSheet)  // Only add if need to have timesheet created
+           //.filter(member => !member.inTimeSheet)  // Only add if need to have timesheet created
            .map(member => [
                member.name || "",  // Get name
            ]);

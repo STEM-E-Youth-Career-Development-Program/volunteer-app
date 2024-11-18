@@ -19,7 +19,7 @@ const sheets = google.sheets({ version: "v4", auth });
 
 // API endpoint to write data to Google Sheets
 app.post("/api/write-to-sheet", async (req, res) => {
-    const { spreadsheetId, name } = req.body;  // 'name' is a 2D array of names (first name, last name)
+    const { spreadsheetId, name } = req.body;  // name is a 2D array of names 
 
     try {
         console.log("Received name array:", name);  // Log the received data
@@ -34,37 +34,47 @@ app.post("/api/write-to-sheet", async (req, res) => {
         const rows = response.data.values || [];
         const firstEmptyRow = rows.length + 1; 
 
-        // 2. Format and write all names to the sheet
-        const values = name; 
-        await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `Sheet1!A${firstEmptyRow}`,
-            valueInputOption: "RAW",
-            resource: { values },
-        });
+        // 2. Create a new sheet for each person in the array and prepare hyperlinks
+        const requests = name.map(([personName], index) => {
+            const newSheetTitle = personName;  // Title of the new sheet is the person's name
 
-        // 3. Create a new sheet for each person in the array
-        const requests = name.map(([firstName]) => {
-            const newSheetTitle = firstName;  
             return {
                 addSheet: {
                     properties: {
-                        title: newSheetTitle,  // Make title of new sheet the name of the person
+                        title: newSheetTitle,  
                     },
                 },
             };
         });
 
-        // 4. Execute the batch update to create multiple sheets
+        // 3. Execute the batch update to create multiple sheets
         const addSheetResponse = await sheets.spreadsheets.batchUpdate({
             spreadsheetId,
             requestBody: {
-                requests,  // Pass the array of requests (one for each name)
+                requests,  // Pass array of requests
             },
         });
 
+        // 4. Get the sheetId of each newly created sheet (for hyperlinks)
+        const sheetIds = addSheetResponse.data.replies.map(reply => reply.addSheet.properties.sheetId);
+
+        // 5. Prepare hyperlinks
+        const hyperlinks = sheetIds.map((sheetId, index) => {
+            const personName = name[index][0]; 
+            const hyperlink = `=HYPERLINK("https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}", "${personName}")`;
+            return [hyperlink];
+        });
+
+        // 6. Update the main sheet with hyperlink
+        await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: `Sheet1!A${firstEmptyRow}`,  // Overwrite the name cell with the hyperlink
+            valueInputOption: "USER_ENTERED",
+            resource: { values: hyperlinks },
+        });
+
         res.status(200).json({
-            message: "Data written and new sheets created successfully",
+            message: "Data written and new sheets created successfully with links.",
             response: addSheetResponse.data,
         });
     } catch (error) {
