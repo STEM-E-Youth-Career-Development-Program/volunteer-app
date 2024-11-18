@@ -58,19 +58,34 @@ app.post("/api/write-to-sheet", async (req, res) => {
         // 4. Get the sheetId of each newly created sheet (for hyperlinks)
         const sheetIds = addSheetResponse.data.replies.map(reply => reply.addSheet.properties.sheetId);
 
-        // 5. Prepare hyperlinks
-        const hyperlinks = sheetIds.map((sheetId, index) => {
+        // 5. Prepare the data for each row (including the A1 cell from the created sheet)
+        const rowsToWrite = sheetIds.map((sheetId, index) => {
             const personName = name[index][0]; 
             const hyperlink = `=HYPERLINK("https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}", "${personName}")`;
-            return [hyperlink];
+
+            // TO BE CHANGED TO SUM OF HOURS
+            const valueFromA1 = `='${personName}'!A1`; 
+            const currentDate = new Date().toLocaleDateString();
+            const todayFormula = "=TODAY()";
+            const weeknumFormula = `=WEEKNUM(D${firstEmptyRow+index}-C${firstEmptyRow+index},1)`;
+            const divisionFormula = `=B${firstEmptyRow+index}/E${firstEmptyRow+index}`;
+
+            return [
+                hyperlink,
+                valueFromA1,
+                currentDate,
+                todayFormula,
+                weeknumFormula,
+                divisionFormula
+            ];
         });
 
-        // 6. Update the main sheet with hyperlink
+        // 6. Write the data to the sheet
         await sheets.spreadsheets.values.update({
             spreadsheetId,
-            range: `Sheet1!A${firstEmptyRow}`,  // Overwrite the name cell with the hyperlink
-            valueInputOption: "USER_ENTERED",
-            resource: { values: hyperlinks },
+            range: `Sheet1!A${firstEmptyRow}`, // Write starting at the first empty row
+            valueInputOption: "USER_ENTERED", // Allow formulas
+            resource: { values: rowsToWrite },
         });
 
         res.status(200).json({
