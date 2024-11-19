@@ -73,10 +73,28 @@ app.post("/api/write-to-sheet", async (req, res) => {
         
                 // Calendar structure 
                 const calendarData = [
-                    [personName, "REMEMBER: Include any time for meetings, calls, events, trainings, computer research, and work"], // Name and reminder
-                    ["Date", ...MONTHS], // Header row for months
-                    ...Array.from({ length: 31 }, (_, i) => [i + 1, ...Array(12).fill("")]), // Dates 1–31 with empty columns for months
+                    [
+                        personName, "REMEMBER: Include any time for meetings, calls, events, trainings, computer research, and work",
+                        ...Array(6).fill(""),
+                        `=HYPERLINK("https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=0", "BACK TO SUMMARY PAGE")`, // Link back to summary page
+                    ], // Name, reminder, link
+                    ["Date", ...MONTHS], // Months
+                    ...Array.from({ length: 31 }, (_, i) => [i + 1, ...Array(12).fill("")]), // Days of the month
                 ];
+
+                const TIME_SHEET_DIRECTIONS = [
+                    ["TIME SHEET DIRECTIONS"],
+                    ["1. Click on your name to go to your tab"],
+                    ["2. Find the date you volunteered: find the month up top and date to the left"],
+                    ["3. Enter the number of hours in the cross-referenced cell. Only enter numbers"],
+                    ["4. You may enter numbers in quarters of an hour (every 15 minutes) by entering in 0.25 increments (1.00, 1.25, 1.50, 1.75)"],
+                    ["5. The summary sheet will auto update with your total hours."]
+                ];
+
+                // Time Sheet Directions
+                TIME_SHEET_DIRECTIONS.forEach((row, i) => {
+                    calendarData[i] = [...(calendarData[i] || []), ...Array(13-calendarData[i].length).fill(""), row[0]]; // Extend to column 'N'
+                });
         
                 // Summation rows (total hours)
                 const totalRow = [
