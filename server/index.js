@@ -114,6 +114,87 @@ app.post("/api/write-to-sheet", async (req, res) => {
                     valueInputOption: "USER_ENTERED", 
                     resource: { values: calendarData },
                 });
+
+                // Combining settings values and data validation -> need request array instead of 2d nested array
+                const dataValidationRequest = {
+                    requests: [
+                        {
+                            updateCells: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 11, 
+                                    endRowIndex: 12, 
+                                    startColumnIndex: 14,
+                                    endColumnIndex: 15,
+                                },
+                                rows: [
+                                    {
+                                        values: [
+                                            {
+                                                userEnteredValue: {
+                                                    stringValue: "D.O.B (MM/DD/YYYY)",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
+                                fields: "userEnteredValue",
+                            },
+                        },
+                        {
+                            updateCells: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 12,
+                                    endRowIndex: 13,
+                                    startColumnIndex: 14,
+                                    endColumnIndex: 15,
+                                },
+                                rows: [
+                                    {
+                                        values: [
+                                            {
+                                                userEnteredValue: {
+                                                    stringValue: "U.S. Citizen/Green Card Holder?",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
+                                fields: "userEnteredValue",
+                            },
+                        },
+                        // Data Validation Cell
+                        {
+                            setDataValidation: {
+                                range: {
+                                    sheetId: sheetId, 
+                                    startRowIndex: 12, 
+                                    endRowIndex: 13,
+                                    startColumnIndex: 15, 
+                                    endColumnIndex: 16, 
+                                },
+                                rule: {
+                                    condition: {
+                                        type: "ONE_OF_LIST", // Only true or false
+                                        values: [
+                                            { userEnteredValue: "Yes" },
+                                            { userEnteredValue: "No" },
+                                        ],
+                                    },
+                                    showCustomUi: true, // Allows the dropdown UI to appear in Sheets
+                                    strict: true, // Restrict values to the dropdown options
+                                },
+                            },
+                        },
+                    ],
+                };
+        
+                // Batch update request to set data validation
+                await sheets.spreadsheets.batchUpdate({
+                    spreadsheetId,
+                    requestBody: dataValidationRequest,
+                });
             })
         );
         
