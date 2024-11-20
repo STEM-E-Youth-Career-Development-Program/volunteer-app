@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
-import { db, collection, getDocs } from "../index.js"
+import { db, collection, getDocs, doc, writeBatch } from "../index.js"
 import writeToGoogleSheet from '../sheets.js';
 
 
@@ -14,10 +14,9 @@ function MemberTable() {
        const fetchMembers = async () => {
            const membersCollection = collection(db, "Interns");
            const membersSnapshot = await getDocs(membersCollection); // Get the documents
-           const membersData = membersSnapshot.docs.map((doc) => doc.data()); // Map through docs to extract data (i.e. timesheet)
+           const membersData = membersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })); // Map through docs and docs id to get data
            setMembers(membersData);
        };
-
 
        fetchMembers();
    }, []);
@@ -25,27 +24,38 @@ function MemberTable() {
 
    const createTimesheet = async () => {
        console.log("Saving members to sheet...");
-       // Call writeMemberToSheet with the members data
-       const data = members
-           //.filter(member => !member.inTimeSheet)  // Only add if need to have timesheet created
-           .map(member => [
-               member.name || "",  // Get name
-           ]);
+       // Filter members who need a timesheet
+       const membersToCreateTimesheets = members.filter(member => !member.inTimeSheet);
+       console.log(membersToCreateTimesheets)
+       
+       // Prepare data for Google Sheets
+       const data = membersToCreateTimesheets.map(member => [
+           member.name || "",
+       ]);
        console.log("Formatted data for Google Sheets:", data);
-
 
        const SPREADSHEET_ID = process.env.REACT_APP_SPREADSHEET_ID;
 
-
        try {
+           // Write data to Google Sheets
            const message = await writeToGoogleSheet(SPREADSHEET_ID, data);
            alert(message);
+
+           // Update inTimeSheet Firestore with batch process
+           const batch = writeBatch(db);
+
+           membersToCreateTimesheets.forEach(member => {
+               const memberRef = doc(db, "Interns", member.id);
+               batch.update(memberRef, { inTimeSheet: true });
+           });
+
+           // Commit the batch update
+           await batch.commit();
+           alert("Timesheet status updated successfully!");
        } catch (error) {
-           alert("Error writing to sheet: " + error.message);
+           alert("Error writing to sheet or updating Firestore: " + error.message);
        }
    };
-
-
 
 
    return (

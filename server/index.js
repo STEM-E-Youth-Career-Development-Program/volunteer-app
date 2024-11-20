@@ -378,18 +378,18 @@ app.post("/api/write-to-sheet", async (req, res) => {
             valueInputOption: "USER_ENTERED", // Allow formulas
             resource: { values: rowsToWrite },
         });
-
+        
         res.status(200).json({
             message: "Data written and new sheets created successfully with links.",
             response: addSheetResponse.data,
         });
     } catch (error) {
         console.error("Error writing to Google Sheets:", error);
-        /*
+        
         res.status(500).json({
             error: `Failed to write to Google Sheets: ${error.message}`,
         });
-        */
+        
     }
 });
 
