@@ -195,6 +195,157 @@ app.post("/api/write-to-sheet", async (req, res) => {
                     spreadsheetId,
                     requestBody: dataValidationRequest,
                 });
+
+                const boldFormattingRequest = {
+                    requests: [
+                        { //Bolding
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 0,
+                                    endRowIndex: 34,
+                                    startColumnIndex: 0,
+                                    endColumnIndex: 1,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                    textFormat: {
+                                        bold: true, // Make text bold
+                                    },
+                                    },
+                                },
+                                fields: "userEnteredFormat(textFormat)", // Only update formatting
+                            },
+                        },
+                        { // Bolding
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 0,
+                                    endRowIndex: 1,
+                                    startColumnIndex: 0,
+                                    endColumnIndex: 8,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                    textFormat: {
+                                        bold: true, 
+                                    },
+                                    },
+                                },
+                                fields: "userEnteredFormat(textFormat)", 
+                            },
+                        },
+                        { // Making user reminder red
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 0,
+                                    endRowIndex: 1,
+                                    startColumnIndex: 1,
+                                    endColumnIndex: 2,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                        textFormat: {
+                                            foregroundColor: {
+                                                red: 1.0,
+                                                green: 0.0,
+                                                blue: 0.0,
+                                            },
+                                        },
+                                    },
+                                },
+                                fields: "userEnteredFormat.textFormat.foregroundColor", 
+                            },
+                        },
+                        { // Bolding
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 1,
+                                    endRowIndex: 2,
+                                    startColumnIndex: 0,
+                                    endColumnIndex: 13,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                    textFormat: {
+                                        bold: true, 
+                                    },
+                                    },
+                                },
+                                fields: "userEnteredFormat(textFormat)", 
+                            },
+                        },
+                        { // Bolding
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 0,
+                                    endRowIndex: 1,
+                                    startColumnIndex: 13,
+                                    endColumnIndex: 15,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                    textFormat: {
+                                        bold: true, 
+                                    },
+                                    },
+                                },
+                                fields: "userEnteredFormat(textFormat)", 
+                            },
+                        },
+                        { // Making user instruction red
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 0,
+                                    endRowIndex: 6,
+                                    startColumnIndex: 13,
+                                    endColumnIndex: 14,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                        textFormat: {
+                                            foregroundColor: {
+                                                red: 1.0,
+                                                green: 0.0,
+                                                blue: 0.0,
+                                            },
+                                        },
+                                    },
+                                },
+                                fields: "userEnteredFormat.textFormat.foregroundColor", 
+                            },
+                        },
+                        { //Bolding
+                            repeatCell: {
+                                range: {
+                                    sheetId: sheetId,
+                                    startRowIndex: 11,
+                                    endRowIndex: 13,
+                                    startColumnIndex: 14,
+                                    endColumnIndex: 15,
+                                },
+                                cell: {
+                                    userEnteredFormat: {
+                                    textFormat: {
+                                        bold: true, 
+                                    },
+                                    },
+                                },
+                                fields: "userEnteredFormat(textFormat)", 
+                            },
+                        },
+                    ],
+                };
+
+                await sheets.spreadsheets.batchUpdate({
+                    spreadsheetId,
+                    requestBody: boldFormattingRequest,
+                });
             })
         );
         
