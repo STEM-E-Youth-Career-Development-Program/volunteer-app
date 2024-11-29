@@ -1,3 +1,4 @@
+const { checkServer } = require('./utils/bot');
 const express = require("express");
 const cors = require("cors");
 const { google } = require("googleapis");
@@ -6,6 +7,23 @@ const path = require("path");
 const app = express();
 app.use(cors());
 app.use(express.json()); // To parse JSON bodies
+
+app.post('/check-server', async (req, res) => {
+    const { interns } = req.body;
+    console.log(req.body);
+    if (!Array.isArray(interns)) {
+        return res.status(400).json({ error: 'Interns must be an array.' });
+    }
+
+    try {
+        const results = await checkServer(interns);
+        res.json({ results });
+    } catch (error) {
+        console.error("Error in /check-server:", error);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+
 
 // Load service account credentials
 const serviceAccount = require("../volunteer-app/testing-steme-c916a02a8270.json");
