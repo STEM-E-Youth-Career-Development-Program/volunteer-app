@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, addDoc, writeBatch, doc } from "firebase/firestore"; 
 // https://firebase.google.com/docs/web/setup#available-libraries
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -59,6 +59,8 @@ Interns = {
     paused: (null | timestamp)
 }
 */
+
+export { db, collection, getDocs, doc, writeBatch };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

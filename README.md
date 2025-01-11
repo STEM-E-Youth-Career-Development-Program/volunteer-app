@@ -1,2 +1,7 @@
 # volunteer-app
-run npm i --save @fortawesome/free-brands-svg-icons
+run:
+npm install
+npm install discord.js
+npm i --save @fortawesome/free-brands-svg-icons
+
+(add requirements doc later)
