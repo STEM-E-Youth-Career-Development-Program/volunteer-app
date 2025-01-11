@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
+import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"
+import { auth } from "./index.js";
+
+
+const access_mgmt_db = getFirestore();
+export { access_mgmt_db };
+
+function access_mgmt() {
+  
+}
 
 const initialData = [
   { firstName: 'Intern 1', lastName: 'L1', email: 'intern1@gmail.com', discordID: 'intern1', isCoordinator: true, isAdmin: false },
