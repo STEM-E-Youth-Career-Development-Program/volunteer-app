@@ -60,7 +60,7 @@ Interns = {
 }
 */
 
-export { db, collection, getDocs, doc, writeBatch };
+export { db, collection, getDocs, addDoc, doc, writeBatch };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
