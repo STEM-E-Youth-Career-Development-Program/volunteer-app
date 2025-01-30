@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"
-import { auth } from "./index.js";
+import { db, collection, getDocs, addDoc, doc, writeBatch } from "../index.js"
+//import { auth } from "./index.js";
 
 
-const access_mgmt_db = getFirestore();
-export { access_mgmt_db };
+//db = getFirestore(), pre-defined in index.js
 
 function access_mgmt() {
   
