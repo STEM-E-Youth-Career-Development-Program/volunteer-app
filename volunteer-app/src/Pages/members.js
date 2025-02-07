@@ -56,12 +56,20 @@ function MemberTable() {
            alert("Error writing to sheet or updating Firestore: " + error.message);
        }
    };
+   
+   const unsignedWaivers = members.filter(member => !member.signedWaiver);
 
 
    return (
        <>
            <NavBarAdmin />
            <div className="access-table">
+                      {unsignedWaivers.length > 0 && (
+                    <div className="warning">
+                        <strong>{unsignedWaivers.length}</strong> intern(s) have not signed the waiver!
+                    </div>
+                )}
+      
                <table>
                    <thead>
                        <tr>
