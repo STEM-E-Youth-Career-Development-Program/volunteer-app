@@ -3,12 +3,22 @@ const express = require("express");
 const cors = require("cors");
 const { google } = require("googleapis");
 const path = require("path");
+const http = require('http');
+
+const hostname = '127.0.0.1';
+const port = 5001;
 
 const app = express();
 app.use(cors());
 app.use(express.json()); // To parse JSON bodies
+app.options('*', cors()); 
 
-app.post('/check-server', async (req, res) => {
+const PORT = 5001;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
+
+app.post('/api/check-server', async (req, res) => {
     const { interns } = req.body;
     console.log(req.body);
     if (!Array.isArray(interns)) {
@@ -23,6 +33,7 @@ app.post('/check-server', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while processing your request.' });
     }
 });
+
 
 
 // Load service account credentials
