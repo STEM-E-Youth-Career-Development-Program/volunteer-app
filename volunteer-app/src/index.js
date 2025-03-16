@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, writeBatch, doc } from "firebase/firestore"; 
+import { getFirestore, collection, getDocs, addDoc, writeBatch, doc, setDoc } from "firebase/firestore"; 
 // https://firebase.google.com/docs/web/setup#available-libraries
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -24,14 +24,14 @@ initializeApp(firebaseConfig);
 const db = getFirestore();
 
 const colUser = collection(db, 'User');
-getDocs(colUser)
+/*getDocs(colUser)
     .then((snapshot) => {
         console.log("Users:");
         snapshot.docs.forEach((doc) => {
             console.log(doc.data());
         })
     })
-/*
+
 User = {
     name: (string),
     discordID: (string),
@@ -60,7 +60,7 @@ Interns = {
 }
 */
 
-export { db, collection, getDocs, addDoc, doc, writeBatch };
+export { db, collection, getDocs, addDoc, doc, writeBatch, setDoc };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
