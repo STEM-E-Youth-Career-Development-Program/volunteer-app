@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
-import { db, collection, getDocs, doc, writeBatch } from "../index.js"
+import { db, collection, getDocs, doc, writeBatch, setDoc } from "../index.js"
 import writeToGoogleSheet from '../sheets.js';
+import retrieveWaiver from "../Waiver";
+import checkDiscord from "../checkDiscord";
 
 
 function MemberTable() {
@@ -56,20 +58,73 @@ function MemberTable() {
            alert("Error writing to sheet or updating Firestore: " + error.message);
        }
    };
-   
-   const unsignedWaivers = members.filter(member => !member.signedWaiver);
+
+    const updateWaiver = async () => {
+        const checkList = retrieveWaiver();
+        console.log(checkList);
+        const updatedData = members.map((row, i) => {
+            let contains = false;
+            checkList.forEach(k => {
+                if (k[3] == row.email) {
+                    updatedData[i] = { ...row, "signedWaiver": k[15] };
+                    contains = true;
+                }
+            });
+            if (!contains) {
+                updatedData[i] = row;
+            }
+        });
+        setMembers(updatedData);
+    };
+
+    const updateDiscord = () => {
+        const discIdList = [];
+        members.forEach(member => {
+            discIdList.push(member.discordID);
+        });
+
+        checkDiscord(discIdList)
+            .then(verifiedList => {
+                let updatedData = [...members]; 
+                for (let i = 0; i < discIdList.length; i++) {
+                    updatedData[i].inServer = verifiedList[i]; 
+                }
+                setMembers(updatedData);
+                handleSave("inServer", "inServer")
+            })
+            .catch(error => {
+                console.error("Error updating Discord status:", error); 
+            });
+    };
 
 
-   return (
-       <>
-           <NavBarAdmin />
-           <div className="access-table">
-                      {unsignedWaivers.length > 0 && (
+    const unsignedWaivers = members.filter(member => !member.signedWaiver);
+
+    const handleSave = async (colname, field) => {
+        try {
+            const updatePromises = members.map((row) => {
+                const internRef = doc(db, 'Interns', row.id);
+                return setDoc(internRef, {
+                    [colname]: (row[`${field}`]===1),
+                }, { merge: true });
+            });
+
+            await Promise.all(updatePromises);
+            console.log('All rows saved successfully!');
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
+    };
+
+    return (
+        <>
+            <NavBarAdmin />
+            <div className="access-table">
+                {unsignedWaivers.length > 0 && (
                     <div className="warning">
                         <strong>{unsignedWaivers.length}</strong> intern(s) have not signed the waiver!
                     </div>
                 )}
-      
                <table>
                    <thead>
                        <tr>
@@ -77,7 +132,7 @@ function MemberTable() {
                            <th>Last Name</th>
                            <th>Email</th>
                            <th>Discord ID</th>
-                           <th>Orientation Attended?</th>
+                           <th>In Discord Server?</th>
                            <th>Waiver Signed?</th>
                            <th>Time Sheet Created?</th>
                            <th>Internship Start Date</th>
@@ -106,7 +161,9 @@ function MemberTable() {
                        <span className="page-number" id="pageNumber">Page 1</span>
                        <button>Next</button>
                    </div>
-                   <button className="save-button" onClick={createTimesheet}>Create Timesheets</button>
+                    <button className="save-button" onClick={createTimesheet}>Create Timesheets</button>
+                    <button className="save-button" onClick={updateWaiver}>Update Waiver status</button>
+                    <button className="save-button" onClick={updateDiscord}>Update Discord status</button>
                </div>
            </div>
        </>
@@ -115,6 +172,3 @@ function MemberTable() {
 
 
 export default MemberTable;
-
-
-
