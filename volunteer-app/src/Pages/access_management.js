@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { db, collection, getDocs, addDoc, doc, writeBatch } from "../index.js"
+import { db, collection, getDocs, addDoc, doc, writeBatch, setDoc } from "../index.js"
 //import { auth } from "./index.js";
 
 
 //db = getFirestore(), pre-defined in index.js
 
-function access_mgmt() {
-  
+async function loadData() {
+    try {
+        const colUser = collection(db, 'User');
+        const snapshot = await getDocs(colUser);
+        return snapshot.docs.map(doc => ({...doc.data(), id:doc.id})); 
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return []; 
+    }
 }
 
-const initialData = [
+
+/*const initialData = [
   { firstName: 'Intern 1', lastName: 'L1', email: 'intern1@gmail.com', discordID: 'intern1', isCoordinator: true, isAdmin: false },
   { firstName: 'Intern 2', lastName: 'L2', email: 'intern2@gmail.com', discordID: 'intern2', isCoordinator: true, isAdmin: true },
   { firstName: 'Intern 3', lastName: 'L3', email: 'intern3@gmail.com', discordID: 'intern3', isCoordinator: false, isAdmin: false },
-  // Add the rest of the interns here...
-];
+];*/
+
 
 const AccessManagement = () => {
-  const [data, setData] = useState(initialData);
-  const [page, setPage] = useState(1);
+  const [data, setData] = useState([]);
+    const [page, setPage] = useState(1);
+
+  useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const loadedData = await loadData(); 
+              setData(loadedData);
+          } catch (error) {
+              console.error("Error fetching data:", error);
+              setData([]);
+          }
+      };
+
+      fetchData();
+  }, []);
 
   const handleCheckboxChange = (index, field) => {
     const updatedData = data.map((row, i) => 
@@ -29,9 +51,22 @@ const AccessManagement = () => {
     setData(updatedData);
   };
 
-  const handleSave = () => {
-    console.log('Data saved:', data);
-  };
+    const handleSave = async () => {
+        try {
+            const updatePromises = data.map((row) => {
+                const userRef = doc(db, 'User', row.id);
+                return setDoc(userRef, {
+                    isAdmin: row.isAdmin,
+                    isCoord: row.isCoord
+                }, { merge: true }); 
+            });
+
+            await Promise.all(updatePromises); 
+            console.log('All rows saved successfully!');
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
+    };
 
   const handleNextPage = () => {
     setPage(page + 1);
@@ -59,7 +94,7 @@ const AccessManagement = () => {
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
-              <th>Email</th>
+              <th>STEM-E ID</th>
               <th>Discord ID</th>
               <th>Volunteer Coordinator</th>
               <th>Admin</th>
@@ -68,15 +103,15 @@ const AccessManagement = () => {
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td>{row.firstName}</td>
-                <td>{row.lastName}</td>
-                <td>{row.email}</td>
+                <td>{row.name.substring(0, row.name.lastIndexOf(" "))}</td>
+                <td>{row.name.split(" ").slice(-1)}</td>
+                <td>TBD</td>
                 <td>{row.discordID}</td>
                 <td>
                   <input
                     type="checkbox"
-                    checked={row.isCoordinator}
-                    onChange={() => handleCheckboxChange(index, 'isCoordinator')}
+                    checked={row.isCoord}
+                    onChange={() => handleCheckboxChange(index, 'isCoord')}
                   />
                 </td>
                 <td>
