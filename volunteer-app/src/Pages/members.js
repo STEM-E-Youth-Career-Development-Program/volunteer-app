@@ -77,6 +77,38 @@ function MemberTable() {
         setMembers(updatedData);
     };
 
+    const updateStartDate = async () => {
+        try {
+            const batch = writeBatch(db);
+            const today = new Date().toISOString().split("T")[0]; //YYYY-MM-DD
+    
+            const membersToUpdate = members.filter(member => member.startDate == null);
+    
+            if (membersToUpdate.length === 0) {
+                alert("No members with null startDate.");
+                return;
+            }
+    
+            membersToUpdate.forEach(member => {
+                const memberRef = doc(db, "Interns", member.id);
+                batch.update(memberRef, { startDate: today });
+            });
+    
+            await batch.commit();
+            alert("Start dates updated successfully!");
+    
+            //update local state
+            setMembers(prevMembers =>
+                prevMembers.map(member =>
+                    member.startDate == null ? { ...member, startDate: today } : member
+                )
+            );
+    
+        } catch (error) {
+            console.error("Error updating start dates:", error);
+        }
+    }
+
     const updateDiscord = () => {
         const discIdList = [];
         members.forEach(member => {
@@ -164,6 +196,7 @@ function MemberTable() {
                     <button className="save-button" onClick={createTimesheet}>Create Timesheets</button>
                     <button className="save-button" onClick={updateWaiver}>Update Waiver status</button>
                     <button className="save-button" onClick={updateDiscord}>Update Discord status</button>
+                    <button className="save-button" onClick={updateStartDate}>Update Start date</button>
                </div>
            </div>
        </>
