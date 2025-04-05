@@ -148,7 +148,7 @@ function MemberTable() {
         }
     };
 
-    return (
+   return (
         <>
             <NavBarAdmin />
             <div className="access-table">
@@ -174,8 +174,8 @@ function MemberTable() {
                    <tbody>
                        {members.map((member, index) => (
                            <tr key={index}>
-                               <td>{member.name?.split(" ")[0]}</td>
-                               <td>{member.name?.split(" ")[1]}</td>
+                               <td>{member.name?member.name.split(" ").slice(0,-1):"N/A"}</td>
+                               <td>{member.name?member.name.split(" ").slice(-1):"N/A"}</td>
                                <td>{member.email}</td>
                                <td>{member.discordID}</td>
                                <td>{member.inServer ? "Yes" : "No"}</td>
@@ -192,11 +192,14 @@ function MemberTable() {
                        <button>Previous</button>
                        <span className="page-number" id="pageNumber">Page 1</span>
                        <button>Next</button>
-                   </div>
-                    <button className="save-button" onClick={createTimesheet}>Create Timesheets</button>
-                    <button className="save-button" onClick={updateWaiver}>Update Waiver status</button>
-                    <button className="save-button" onClick={updateDiscord}>Update Discord status</button>
-                    <button className="save-button" onClick={updateStartDate}>Update Start date</button>
+                    </div>
+                    <div className="save-button-group">
+                        <button onClick={createTimesheet}>Create Timesheets</button>
+                        <button onClick={updateWaiver}>Update Waiver status</button>
+                        <button onClick={updateDiscord}>Update Discord status</button>
+                        <button onClick={updateStartDate}>Update Start date</button>
+                        <button onClick={() => refreshTable(members)}>Refresh Table</button>
+                    </div>
                </div>
            </div>
        </>
