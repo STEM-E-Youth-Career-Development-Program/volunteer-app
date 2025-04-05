@@ -95,26 +95,28 @@ th {
     color: #333;
 }
 
-.save-button {
+.save-button-group button:not(:last-child) {
+    border-right: none;
+}
+.save-button-group:after {
+     content: "";
+     clear: both;
+     display: table;
+
+}
+.save-button-group button{
     padding: 10px 20px;
     background-color: #000;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
 }
 
-.save-button:hover {
+.save-button-group button:hover {
     background-color: #f2f2f2;
-    border: 2px solid #000;
+    box-shadow: 0 0 0 2px #000,
+                inset 0 0 0 1px #fff;
     color: #000;
-    transform: translateY(-2px);
-}
-
-.save-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
