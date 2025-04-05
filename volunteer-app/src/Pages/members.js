@@ -58,6 +58,7 @@ function MemberTable() {
        } catch (error) {
            alert("Error writing to sheet or updating Firestore: " + error.message);
        }
+      applyFilters();
    };
 
     const updateWaiver = async () => {
@@ -76,6 +77,8 @@ function MemberTable() {
             }
         });
         setMembers(updatedData);
+       applyFilters();
+
     };
 
     const updateStartDate = async () => {
@@ -103,6 +106,8 @@ function MemberTable() {
                 prevMembers.map(member =>
                     member.startDate == null ? { ...member, startDate: today } : member
                 )
+                       applyFilters();
+
             );
     
         } catch (error) {
