@@ -14,7 +14,7 @@ let filterState = {
 };
 
 // Function to apply filters
-function applyFilters() {
+export function applyFilters() {
     const filteredItems = items.filter(item => {
         const orientationMatch = filterState.orientation === null || 
             (filterState.orientation === true && item.orientationCompleted) || 
