@@ -5,6 +5,7 @@ import { db, collection, getDocs, doc, writeBatch, setDoc } from "../index.js"
 import writeToGoogleSheet from '../sheets.js';
 import retrieveWaiver from "../Waiver";
 import checkDiscord from "../checkDiscord";
+import { applyfilter } from "./membersPageFilter.js";
 
 
 function MemberTable() {
