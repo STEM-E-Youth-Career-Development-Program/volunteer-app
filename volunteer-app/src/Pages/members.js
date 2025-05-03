@@ -5,7 +5,7 @@ import { db, collection, getDocs, doc, writeBatch, setDoc } from "../index.js"
 import writeToGoogleSheet from '../sheets.js';
 import retrieveWaiver from "../Waiver";
 import checkDiscord from "../checkDiscord";
-import { applyFilter } from "./membersPageFilter.js";
+import { applyFilters } from "./membersPageFilter.js";
 
 
 function MemberTable() {
@@ -58,7 +58,8 @@ function MemberTable() {
        } catch (error) {
            alert("Error writing to sheet or updating Firestore: " + error.message);
        }
-      applyFilters();
+      
+       applyFilters();
    };
 
     const updateWaiver = async () => {
@@ -77,7 +78,7 @@ function MemberTable() {
             }
         });
         setMembers(updatedData);
-       applyFilters();
+        applyFilters();
 
     };
 
@@ -106,9 +107,8 @@ function MemberTable() {
                 prevMembers.map(member =>
                     member.startDate == null ? { ...member, startDate: today } : member
                 )
-                       applyFilters();
-
             );
+            applyFilters();
     
         } catch (error) {
             console.error("Error updating start dates:", error);
@@ -204,7 +204,6 @@ function MemberTable() {
                         <button onClick={updateWaiver}>Update Waiver status</button>
                         <button onClick={updateDiscord}>Update Discord status</button>
                         <button onClick={updateStartDate}>Update Start date</button>
-                        <button onClick={() => refreshTable(members)}>Refresh Table</button>
                     </div>
                </div>
            </div>
