@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer App</title>
+    <link rel="stylesheet" href="ticketTable.css">
+</head>
+<body>
+    <div class="ticket-table">
+        <div class="table-append">
+            <span>
+                Show entries:
+                <select class="input">
+                    <option value="50" selected disabled>50</option>
+                </select>
+            </span>
+            <span>
+                Search:
+                <input type="text" class="input"/>
+            </span>
+        </div>
+        <table>
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 20%;">
+                <col style="width: 50%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+            </colgroup>
+            <tr>
+                <th>Due Date</th>
+                <th>Client</th>
+                <th>Request</th>
+                <th>Status</th>
+                <th>Priority</th>
+            </tr>
+            <tr>
+                <td>12/31/2020</td>
+                <td>Jeff Smith</td>
+                <td>Lorem ipsum dolor sit amet consectetur adipiscing elit. Consectetur adipiscing elit quisque faucibus ex sapien vitae. Ex sapien vitae pellentesque sem placerat in id. Placerat in id cursus mi pretium tellus duis. Pretium tellus duis convallis tempus leo eu aenean.</td>
+                <td><span class="status open">Open</span></td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>12/28/2020</td>
+                <td>Maria Jones</td>
+                <td>Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.</td>
+                <td><span class="status closed">Closed</span></td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>12/23/2020</td>
+                <td>John Cobaine</td>
+                <td>Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam.</td>
+                <td><span class="status paused">Paused</span></td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>11/27/2020</td>
+                <td>Steve Buffet</td>
+                <td>Test OK</td>
+                <td><span class="status deleted">Deleted</span></td>
+                <td>1</td>
+            </tr>
+        </table>
+        <div class="table-append">
+            <p id="entryText">Showing 1 to 4 of 4 entries</p>
+            <span class="pagination">
+                <button style="border-top-left-radius:10px; border-bottom-left-radius:10px;">Previous</button>
+                <span class="page-number" id="pageNumber">Page 1</span>
+                <button style="border-top-right-radius:10px; border-bottom-right-radius:10px;">Next</button>
+            </span>
+        </div>
+    </div>
+</body>
+</html>
