@@ -9,15 +9,27 @@
 </head>
 <body>
     <div class="ticket-div">
-        <div class="ticket-filter">
-            <select name="filter" id="filter">
-                <option selected disabled>Filter By: (Dropdown)</option>
-                <option value="due date">Due Date</option>
-                <option value="client">Client</option>
-                <option value="request">Request</option>
-                <option value="status">Status</option>
-                <option value="priority">Priority</option>
-            </select>
+        <div class="top-bar">
+            <div class="ticket-filter">
+                <select name="filter" id="filter">
+                    <option selected disabled>Filter By: (Dropdown)</option>
+                    <option value="due date">Due Date</option>
+                    <option value="client">Client</option>
+                    <option value="request">Request</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button class="button">
+                <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="Edit Icon"/>
+                Edit Ticket
+                </button>
+                <button class="button">
+                <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="Edit Icon"/>
+                New Ticket
+                </button>
+            </div>
         </div>
         <div class="ticket-table">
             <div class="table-append">

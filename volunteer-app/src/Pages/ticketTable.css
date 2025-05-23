@@ -126,3 +126,43 @@ select {
     border-radius: 0.3rem;
     box-shadow: 0px 0px 3px 2px lightgrey;
 }
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .button img {
+    width: 16px;
+    height: 16px;
+    transition: filter 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: black;
+    color: white;
+  }
+  
+  .button:hover img {
+    filter: brightness(0) invert(1);
+  }
+  
