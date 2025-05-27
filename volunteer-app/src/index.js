@@ -23,7 +23,7 @@ initializeApp(firebaseConfig);
 
 const db = getFirestore();
 
-//const colUser = collection(db, 'User');
+////const colUser = collection(db, 'User');
 /*getDocs(colUser)
     .then((snapshot) => {
         console.log("Users:");
