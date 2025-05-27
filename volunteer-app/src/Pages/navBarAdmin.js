@@ -16,6 +16,7 @@ function NavBarAdmin() {
                     <span><a href="#">Resources</a></span>
                     <span><a href="/members">Onboarding Interns</a></span>
                     <span><a href="/access">Admin Console</a></span>
+                    <span><a href="/ticketing">Ticketing</a></span>
                 </nav>
                 <div className="account">
                     <UserMenu />
