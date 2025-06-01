@@ -17,6 +17,7 @@ import AccessManagement from "./Pages/access_management";
 import MemberTable from "./Pages/members";
 import { Authenticate } from "./DiscordAuth.js";
 import Logout from "./Pages/logout";
+import Ticketing from "./Ticketing/Ticketing.js";
 
 function App() {
     const [session, setSession] = useState(null);
@@ -40,6 +41,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/userpage" element={<AccPageOthers />} />
                         <Route path="/samplepage" element={<SamplePage />} />
+                        <Route path="/ticketing" element={<Ticketing />} />
                         <Route path="/supportform" element={<SupportForm />} />
                         <Route path="/error" element={<ErrorPage />} />
                         <Route path="/access" element={<AccessManagement />} />
