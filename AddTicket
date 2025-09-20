@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
+
+function AddTicket() {
+  const [ticket, setTicket] = useState({
+    title: "",
+    description: "",
+    ID: "",
+    sender: "",
+    status: 0,
+    date: new Date().toISOString(),
+    priority: 3,
+    recipient: null,
+    notes: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTicket((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await addDoc(collection(db, "Tickets"), ticket);
+      alert("Ticket added successfully!");
+    } catch (err) {
+      console.error("Error adding ticket:", err);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Create Ticket</h2>
+      <input name="title" placeholder="Title" onChange={handleChange} />
+      <input name="description" placeholder="Description" onChange={handleChange} />
+      <input name="ID" placeholder="Ticket ID" onChange={handleChange} />
+      <input name="sender" placeholder="Sender" onChange={handleChange} />
+      <select name="priority" onChange={handleChange}>
+        <option value={1}>High</option>
+        <option value={2}>Medium-High</option>
+        <option value={3}>Medium</option>
+        <option value={4}>Low</option>
+        <option value={5}>Very Low</option>
+      </select>
+      <button onClick={handleSubmit}>Save Ticket</button>
+    </div>
+  );
+}
+
+export default AddTicket;
