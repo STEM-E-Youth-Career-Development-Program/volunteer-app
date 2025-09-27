@@ -1,47 +1,149 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NavBarAdmin from "../Pages/navBarAdmin";
 import "./Ticketing.css"
+import { db, collection, getDocs, addDoc, doc, writeBatch, setDoc } from "../index.js"
+
+async function loadTicket() {
+    try {
+        const colTickets = collection(db, 'Tickets');
+        const snapshot = await getDocs(colTickets);
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
+
+async function loadUsers() {
+    try {
+        const colUsers = collection(db, 'User');
+        const snapshot = await getDocs(colUsers);
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
+
+async function getName(userData, id) {
+    const res = await Promise.all(userData
+        .filter(user => user.id === id) 
+        .map(async (user) => {
+            return [user.id,user.name];
+        })
+    );
+    return res;
+}
 
 
-const Ticketing = (props)=>{
-    const defaultData = {priority:"",due_date:"",recipient:"",description:"",type:"",team:"",title:""};
-    const[formData,setFormData]=useState({...defaultData});
-    const[ticketNumber,setTicketNumber]=useState(1);
-    const[errors,setErrors]=useState({});
-    const[message,setMessage]=useState("");
-    const handleChange = (event)=>{
+function Ticketing(props) {
+    //table loading
+    const [showForm, setShowForm] = useState(false);
+    const [page, setPage] = useState(1);
+    const [data, setData] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [clientNames, setClientNames] = useState([]);
+    useEffect(() => {
+        const fetchTicket = async () => {
+            try {
+                const loadedTicket = await loadTicket();
+                setData(loadedTicket);
+            } catch (error) {
+                console.error("Error fetching ticket data:", error);
+                setData([]);
+            }
+        };
+
+        fetchTicket();
+    }, []);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const loaded = await loadUsers();
+                setUsers(loaded);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setUsers([]);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const promises = data.map(async (row) => {
+                const output = await getName(users, row.sender);
+                return output;  
+            });
+
+            const names = await Promise.all(promises);
+            setClientNames(names);
+            console.log(clientNames);
+        };
+        fetchData();
+    }, [data, users]);
+
+    const handleNextPage = () => {
+        setPage(page + 1);
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
+    //ticket adding
+    const isSubmitted = useRef(false);
+    const defaultData = { priority: "", date: new Date().toISOString(), recipient: "", description: "", status: 1, client: "HPBGTeV2wpIAUMxJKYC4", title: "" }; //default client
+    const [formData, setFormData] = useState({ ...defaultData });
+    const [errors, setErrors] = useState({});
+    const [message, setMessage] = useState("");
+    const handleChange = (event) => {
         setMessage('');
-        const {name, value} = event.target;
-        setFormData({...formData,[name]:value});
-        if(value === ""){
-            setErrors({...errors,[name]:true})
-        }else{
-           setErrors({...errors,[name]:false}) 
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
+        if (value === "") {
+            setErrors({ ...errors, [name]: true })
+        } else {
+            setErrors({ ...errors, [name]: false })
         }
     }
-    const handleSubmit = ()=>{
+    const handleSubmit = async () => {
         let num = 0;
-        const errorCopy = {...errors};
-        Object.keys({...formData}).forEach(element=>{
-            if(formData[element] === ""){
-                errorCopy[element]= true;
+        const errorCopy = { ...errors };
+        Object.keys({ ...formData }).forEach(element => {
+            if (formData[element] === "") {
+                errorCopy[element] = true;
                 num++;
-            }else{
+            } else {
                 errorCopy[element] = false;
             }
         })
-        if(num > 0){
+        if (num > 0) {
             setErrors(errorCopy);
             return;
         }
         setMessage("Please wait we are submitting your ticket");
-        setTimeout(function(){
-            setMessage("Your ticket submitted successfully and, ticket number:#"+(ticketNumber));
-            setFormData(defaultData);
-            setTicketNumber(ticketNumber+1);
-        },4000)
-
+        setTimeout(function () {
+            isSubmitted.current = true;
+            setMessage("Your ticket submitted successfully");
+        }, 1000)
     }
+    useEffect(() => {
+        if (isSubmitted.current) {
+            const updateDatabase = async () => {
+                try {
+                    await addDoc(collection(db, "Tickets"), formData);
+                    alert("Ticket added successfully!");
+                } catch (err) {
+                    console.error("Error adding ticket:", err);
+                }
+            };
+            updateDatabase();
+            isSubmitted.current = false;
+        }
+    }, [isSubmitted.current]);
+    
     return(
         <>
         <NavBarAdmin/>
@@ -67,7 +169,7 @@ const Ticketing = (props)=>{
             />
             Edit Ticket
           </button>
-          <button className="button">
+          <button className="button" onClick={() => (showForm) ? setShowForm(false) : setShowForm(true)}>
             <img
               src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png"
               alt="Edit Icon"
@@ -104,48 +206,15 @@ const Ticketing = (props)=>{
             <th>Status</th>
             <th>Priority</th>
           </tr>
-          <tr>
-            <td>12/31/2020</td>
-            <td>Jeff Smith</td>
-            <td>
-              Lorem ipsum dolor sit amet consectetur adipiscing elit.
-              Consectetur adipiscing elit quisque faucibus ex sapien vitae. Ex
-              sapien vitae pellentesque sem placerat in id. Placerat in id
-              cursus mi pretium tellus duis. Pretium tellus duis convallis
-              tempus leo eu aenean.
-            </td>
-            <td><span className="status open">Open</span></td>
-            <td>4</td>
-          </tr>
-          <tr>
-            <td>12/28/2020</td>
-            <td>Maria Jones</td>
-            <td>
-              Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet
-              consectetur adipiscing elit quisque faucibus ex. Adipiscing elit
-              quisque faucibus ex sapien vitae pellentesque.
-            </td>
-            <td><span className="status closed">Closed</span></td>
-            <td>2</td>
-          </tr>
-          <tr>
-            <td>12/23/2020</td>
-            <td>John Cobaine</td>
-            <td>
-              Lorem ipsum dolor sit amet consectetur adipiscing elit quisque
-              faucibus ex sapien vitae pellentesque sem placerat in id cursus mi
-              pretium tellus duis convallis tempus leo eu aenean sed diam.
-            </td>
-            <td><span className="status paused">Paused</span></td>
-            <td>3</td>
-          </tr>
-          <tr>
-            <td>11/27/2020</td>
-            <td>Steve Buffet</td>
-            <td>Test OK</td>
-            <td><span className="status deleted">Deleted</span></td>
-            <td>1</td>
-          </tr>
+           {data.map((row, index) => (
+              <tr key={index}>
+                <td>{row.title}</td>
+                <td>{(clientNames.length > 0 && clientNames[index][0].length > 0) ? clientNames[index][0][1] : "loading"}</td>
+                <td>{row.description}</td>
+                <td>{row.status}</td>
+                <td>{row.priority}</td>
+              </tr>
+            ))}
         </table>
         <div className="table-append">
           <p id="entryText">Showing 1 to 4 of 4 entries</p>
@@ -165,97 +234,78 @@ const Ticketing = (props)=>{
         </div>
       </div>
     </div>
-    <div className="container">
-      <h1>Ticket Submission Form</h1>
-      <form action="#" method="post">
-        <div className="form-group">
-          <label for="title">Title of Ticket</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            placeholder="Enter title"
-            value={formData?.title}
-            onChange={handleChange}
-          />
-          {errors?.title && <p className="error">Please fill required field</p>}
         </div>
+        {showForm && (
+            <div className="container">
+            <h1>Ticket Submission Form</h1>
+            <form action="#" method="post">
+                <div className="form-group">
+                    <label for="title">Title of Ticket</label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="Enter title"
+                        value={formData?.title}
+                        onChange={handleChange}
+                    />
+                    {errors?.title && <p className="error">Please fill required field</p>}
+                </div>
 
-        <div className="form-group">
-          <label for="team">Team Name</label>
-          <select id="team" name="team" value={formData?.team} onChange={handleChange}>
-            <option value="">Select team</option>
-            <option value="team-a">Volunteer App</option>
-          </select>
-          {errors?.team && <p className="error">Please fill required field</p>}
-        </div>
+                <div className="form-group">
+                    <label for="recipient">Recipient</label>
+                    <select id="recipient" name="recipient" value={formData?.recipient} onChange={handleChange}>
+                        <option value="toTriage">Await Triaging</option>
+                        {clientNames.length > 0 ? (
+                            clientNames.map((client, index) => {
+                                const isClientValid = client[0].length > 0;
+                                return (
+                                    <option key={index} value={isClientValid ? client[0][0] : "0"}>
+                                        {isClientValid ? client[0][1] : "loading"}
+                                    </option>
+                                );
+                            })
+                        ) : (
+                            <option value="0">loading...</option>
+                        )}
+                    </select>
+                    {errors?.recipient && <p className="error">Please fill required field</p>}
+                </div>
 
-        <div className="form-group">
-          <label for="type">Type</label>
-          <input
-            type="text"
-            id="type"
-            name="type"
-            placeholder="Enter type of ticket"
-            value={formData?.type}
-            onChange={handleChange}
-          />
-           {errors?.type && <p className="error">Please fill required field</p>}
-        </div>
+                <div className="form-group">
+                    <label for="description">Description</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                        placeholder="Enter description"
+                        value={formData?.description}
+                        onChange={handleChange}
+                    ></textarea>
+                    {errors?.description && <p className="error">Please fill required field</p>}
+                </div>
 
-        <div className="form-group">
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            placeholder="Enter description"
-            value={formData?.description}
-            onChange={handleChange}
-          ></textarea>
-           {errors?.description && <p className="error">Please fill required field</p>}
-        </div>
+                <div className="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority" value={formData?.priority}
+                        onChange={handleChange}>
+                        <option value="">Select</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    {errors?.priority && <p className="error">Please fill required field</p>}
+                </div>
 
-        <div className="form-group">
-          <label for="recipient"
-            >Recipient Information (Email/DiscordID/Username)</label
-          >
-          <input
-            type="text"
-            id="recipient"
-            name="recipient"
-            placeholder="Enter recipient information"
-            value={formData?.recipient}
-            onChange={handleChange}
-          />
-          {errors?.recipient && <p className="error">Please fill required field</p>}
+                <button type="button" onClick={handleSubmit}>Submit</button>
+                {message !== "" && <p className="success-message">{message}</p>}
+            </form>
         </div>
-
-        <div className="form-group">
-          <label for="due-date">Due Date</label>
-          <input type="date" id="due-date" name="due_date"   value={formData?.due_date}
-            onChange={handleChange}/>
-          {errors?.due_date && <p className="error">Please fill required field</p>}
-        </div>
-
-        <div className="form-group">
-          <label for="priority">Priority</label>
-          <select id="priority" name="priority" value={formData?.priority}
-            onChange={handleChange}>
-                <option value="">Select</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-          {errors?.priority && <p className="error">Please fill required field</p>}
-        </div>
-
-        <button type="button" onClick={handleSubmit}>Submit</button>
-        {message !== "" && <p className="success-message">{message}</p>}
-      </form>
-    </div>
-        </div>
-        </div>
+        )}
+            </div>
         </>
     )
 }
