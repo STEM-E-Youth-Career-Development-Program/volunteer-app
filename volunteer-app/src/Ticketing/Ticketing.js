@@ -196,7 +196,7 @@ const Ticketing = () => {
 
               <div className="table-append">
                 <p id="entryText">
-                  Showing {rows.length} {rows.length === 1 ? "entry" : "entries"}
+                  Showing {rows.length > 0 ? 1 : 0} to {rows.length} of {rows.length} {rows.length === 1 ? "entry" : "entries"}
                 </p>
                 <span className="pagination">
                   <button>Previous</button>
