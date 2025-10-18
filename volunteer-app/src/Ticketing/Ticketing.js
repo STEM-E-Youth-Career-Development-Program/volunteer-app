@@ -217,7 +217,9 @@ function Ticketing(props) {
             ))}
         </table>
         <div className="table-append">
-          <p id="entryText">Showing 1 to 4 of 4 entries</p>
+          <p id="entryText">
+               Showing {data.length > 0 ? 1 : 0} to {data.length} of {data.length} {data.length === 1 ? "entry" : "entries"}
+          </p>
           <span className="pagination">
             <button
               
