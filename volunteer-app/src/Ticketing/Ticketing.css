@@ -240,3 +240,40 @@ select {
             flex-direction: column;
         }
   
+        
+.full-page,
+.ticket-div {
+  max-width: 1200px;      
+  width: 100%;
+  margin: 0 auto;         
+}
+
+.ticket-table {
+  width: 100% !important;            
+  max-width: none !important;        
+}
+
+.ticket-table table {
+  width: 100% !important;            
+  table-layout: auto;                
+  border-collapse: collapse;
+}
+
+.ticket-table th,
+.ticket-table td {
+  padding: 8px 12px;                
+  vertical-align: top;
+  word-break: break-word;         
+}
+
+.table-append {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;                  
+}
+.main-content {
+  padding: 16px;
+}
+
