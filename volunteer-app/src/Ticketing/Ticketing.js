@@ -1,7 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useId } from "react";
 import NavBarAdmin from "../Pages/navBarAdmin";
 import "./Ticketing.css"
 import { db, collection, getDocs, addDoc, doc, writeBatch, setDoc } from "../index.js"
+
+const statusLabels = {
+    0: "Awaiting Triaging",
+    1: "Assigned",
+    2: "User Update Needed",
+    3: "Closed"
+};
 
 async function loadTicket() {
     try {
@@ -35,6 +42,52 @@ async function getName(userData, id) {
     return res;
 }
 
+function CheckboxElement({ label, onChange }) {
+    const id = useId();
+    return (
+        <span>
+            <input type="checkbox" id={id} onChange={onChange} />
+            <label htmlFor={id}>{label}</label>
+        </span>
+    );
+}
+function FilterTable({ filters, setFilters }) {
+    const handleCheckboxChange = (category, value) => {
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [category]: {
+                ...prevFilters[category],
+                [value]: !prevFilters[category][value]
+            }
+        }));
+    };
+
+    return (
+        <div className="dropdown">
+            <span className="drop">Filter By</span>
+            <div className="dropdown-content">
+                <div className="Section">
+                    <h4>Status</h4>
+                    <br />
+                    <div className="Dropdowndiv">
+                        {[0, 1, 2, 3].map((status) => (
+                            <CheckboxElement label={statusLabels[status]} onChange={() => handleCheckboxChange('status', status)} />
+                        ))}
+                    </div>
+                </div>
+                <div className="Section">
+                    <h4>Priority</h4>
+                    <br />
+                    <div className="Dropdowndiv">
+                        {[1, 2, 3, 4, 5].map((priority) => (
+                            <CheckboxElement label={priority} onChange={() => handleCheckboxChange('priority', priority)} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function Ticketing(props) {
     //table loading
@@ -43,6 +96,10 @@ function Ticketing(props) {
     const [data, setData] = useState([]);
     const [users, setUsers] = useState([]);
     const [clientNames, setClientNames] = useState([]);
+    const [filters, setFilters] = useState({
+        status: {},
+        priority: {},
+    });
     useEffect(() => {
         const fetchTicket = async () => {
             try {
@@ -94,7 +151,7 @@ function Ticketing(props) {
 
     //ticket adding
     const isSubmitted = useRef(false);
-    const defaultData = { priority: "", date: new Date().toISOString(), recipient: "", description: "", status: 1, client: "HPBGTeV2wpIAUMxJKYC4", title: "" }; //default client
+    const defaultData = { priority: 1, date: new Date().toISOString(), recipient: "", description: "", status: 1, sender: "HPBGTeV2wpIAUMxJKYC4", title: "" }; //default client
     const [formData, setFormData] = useState({ ...defaultData });
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState("");
@@ -143,6 +200,12 @@ function Ticketing(props) {
             isSubmitted.current = false;
         }
     }, [isSubmitted.current]);
+
+    const filteredRows = data.filter(row => {
+        const statusMatch = Object.keys(filters.status).every(key => !filters.status[key] || row.status == key) || !Object.values(filters.status).includes(true);
+        const priorityMatch = Object.keys(filters.priority).every(key => !filters.priority[key] || row.priority == key) || !Object.values(filters.priority).includes(true);
+        return statusMatch && priorityMatch;
+    });
     
     return(
         <>
@@ -151,16 +214,7 @@ function Ticketing(props) {
         <div className="full-page">
            <div className="ticket-div">
       <div className="top-bar">
-        <div className="ticket-filter">
-          <select name="filter" id="filter">
-            <option selected>Filter By: (Dropdown)</option>
-            <option value="due date">Due Date</option>
-            <option value="client">Client</option>
-            <option value="request">Request</option>
-            <option value="status">Status</option>
-            <option value="priority">Priority</option>
-          </select>
-        </div>
+        <FilterTable filters={filters} setFilters={setFilters} />
         <div className="button-group">
           <button className="button">
             <img
@@ -200,16 +254,16 @@ function Ticketing(props) {
             <col />
           </colgroup>
           <tr>
-            <th>Due Date</th>
+            <th>Title</th>
             <th>Client</th>
             <th>Request</th>
             <th>Status</th>
             <th>Priority</th>
           </tr>
-           {data.map((row, index) => (
+           {filteredRows.map((row, index) => (
               <tr key={index}>
                 <td>{row.title}</td>
-                <td>{(clientNames.length > 0 && clientNames[index][0].length > 0) ? clientNames[index][0][1] : "loading"}</td>
+                <td>{(clientNames.length > 0 && clientNames[index].length > 0) ? clientNames[index][0][1] : "loading"}</td>
                 <td>{row.description}</td>
                 <td>{row.status}</td>
                 <td>{row.priority}</td>
@@ -218,7 +272,7 @@ function Ticketing(props) {
         </table>
         <div className="table-append">
           <p id="entryText">
-               Showing {data.length > 0 ? 1 : 0} to {data.length} of {data.length} {data.length === 1 ? "entry" : "entries"}
+            Showing {filteredRows.length > 0 ? 1 : 0} to {filteredRows.length} of {filteredRows.length} {filteredRows.length === 1 ? "entry" : "entries"}
           </p>
           <span className="pagination">
             <button
