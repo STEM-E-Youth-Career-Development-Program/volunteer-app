@@ -88,9 +88,29 @@ function FilterTable({ filters, setFilters }) {
         </div>
     );
 }
+function pagination(totalItems, itemsPerPage, currentPage) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+    }
+
+    const hasNext = currentPage < totalPages;
+    const hasPrevious = currentPage > 1;
+
+    return {
+        totalPages,
+        pages,
+        hasNext,
+        hasPrevious,
+        nextPage: hasNext ? currentPage + 1 : currentPage,
+        previousPage: hasPrevious ? currentPage - 1 : currentPage,
+    };
+}
 function Ticketing(props) {
     //table loading
+    const itemsPerPage = 10;
     const [showForm, setShowForm] = useState(false);
     const [page, setPage] = useState(1);
     const [data, setData] = useState([]);
@@ -206,6 +226,14 @@ function Ticketing(props) {
         const priorityMatch = Object.keys(filters.priority).every(key => !filters.priority[key] || row.priority == key) || !Object.values(filters.priority).includes(true);
         return statusMatch && priorityMatch;
     });
+
+    const pageData = pagination(filteredRows.length, itemsPerPage, page);
+
+    const paginatedRows = filteredRows.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+    );
+
     
     return(
         <>
@@ -260,32 +288,36 @@ function Ticketing(props) {
             <th>Status</th>
             <th>Priority</th>
           </tr>
-           {filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.title}</td>
-                <td>{(clientNames.length > 0 && clientNames[index].length > 0) ? clientNames[index][0][1] : "loading"}</td>
-                <td>{row.description}</td>
-                <td>{row.status}</td>
-                <td>{row.priority}</td>
-              </tr>
-            ))}
+           {paginatedRows.map((row, index) => {
+              const realIndex = (page - 1) * itemsPerPage + index;
+              return (
+                <tr key={realIndex}>
+                  <td>{row.title}</td>
+                  <td>{clientNames[realIndex]?.[0]?.[1] || "loading"}</td>
+                  <td>{row.description}</td>
+                  <td>{row.status}</td>
+                  <td>{row.priority}</td>
+                </tr>
+              )
+            })}
         </table>
         <div className="table-append">
           <p id="entryText">
-            Showing {filteredRows.length > 0 ? 1 : 0} to {filteredRows.length} of {filteredRows.length} {filteredRows.length === 1 ? "entry" : "entries"}
+            Showing {filteredRows.length === 0 ? 0 : (page - 1) * itemsPerPage + 1} to {Math.min(page * itemsPerPage, filteredRows.length)} of {filteredRows.length} entries
           </p>
           <span className="pagination">
-            <button
-              
-            >
+            <button disabled={!pageData.hasPrevious} onClick={() => setPage(pageData.previousPage)}>
               Previous
             </button>
-            <span className="page-number" id="pageNumber">Page 1</span>
-            <button
-              
-            >
+
+            <span className="page-number" id="pageNumber">
+              Page {page} of {pageData.totalPages}
+            </span>
+
+            <button disabled={!pageData.hasNext} onClick={() => setPage(pageData.nextPage)}>
               Next
             </button>
+
           </span>
         </div>
       </div>
