@@ -63,13 +63,13 @@ function FilterTable({ filters, setFilters }) {
     };
 
     return (
-        <div className="dropdown">
+        <div className="ticket-dropdown">
             <span className="drop">Filter By</span>
-            <div className="dropdown-content">
+            <div className="ticket-dropdown-content">
                 <div className="Section">
                     <h4>Status</h4>
                     <br />
-                    <div className="Dropdowndiv">
+                    <div className="ticket-dropdowndiv">
                         {[0, 1, 2, 3].map((status) => (
                             <CheckboxElement label={statusLabels[status]} onChange={() => handleCheckboxChange('status', status)} />
                         ))}
@@ -78,7 +78,7 @@ function FilterTable({ filters, setFilters }) {
                 <div className="Section">
                     <h4>Priority</h4>
                     <br />
-                    <div className="Dropdowndiv">
+                    <div className="ticket-dropdowndiv">
                         {[1, 2, 3, 4, 5].map((priority) => (
                             <CheckboxElement label={priority} onChange={() => handleCheckboxChange('priority', priority)} />
                         ))}
