@@ -1,5 +1,3 @@
-// You can add interactive functionality here later if needed
-// You can add interactive functionality here later if needed
 import "./navBarAdmin.css";
 import "./nav_bar.css"
 import UserMenu from './userMenu.js';
