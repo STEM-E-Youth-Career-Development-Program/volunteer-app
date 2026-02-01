@@ -115,33 +115,33 @@ select {
   -webkit-appearance: none;
 }
 
-.dropdown {
+.ticket-dropdown {
     position: relative;
     display: inline-block;
     margin-left: 10px;
     margin-top: 10px;
 }
 
-  .dropdown:hover .dropdown-content {
+  .ticket-dropdown:hover .ticket-dropdown-content {
     display: block;
   }
 
-  .dropdownTable {
+  .ticket-dropdownTable {
     border: 0px;
   }
 
-.Dropdowndiv {
+.ticket-dropdowndiv {
     display: flex;
     flex-flow: row wrap;
     font-size: small;
 }
 
-    .Dropdowndiv div {
+    .ticket-dropdowndiv div {
         flex: 1 0 21%;
         margin: 5px;
     }
 
-    .Dropdowndiv span {
+    .ticket-dropdowndiv span {
         display: flex;
         flex: 1 0 50%;
     }
@@ -185,7 +185,7 @@ select {
     border-width: 4px;
 }
 
-.dropdown-content {
+.ticket-dropdown-content {
     position: absolute;
     left: 0.5rem;
     display: none;
