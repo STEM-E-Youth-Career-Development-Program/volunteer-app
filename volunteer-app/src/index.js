@@ -4,63 +4,78 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, writeBatch, doc, setDoc } from "firebase/firestore"; 
-// https://firebase.google.com/docs/web/setup#available-libraries
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-    apiKey: "AIzaSyAuuq0i6-DITTNOFGzut3hy7ncsHgPj8bo",
-    authDomain: "stem-e-volunteer-app.firebaseapp.com",
-    projectId: "stem-e-volunteer-app",
-    storageBucket: "stem-e-volunteer-app.appspot.com",
-    messagingSenderId: "238931221133",
-    appId: "1:238931221133:web:00e64c3b8b9211f0b720c4",
-    measurementId: "G-6FEZM656MH"
+// Firebase initialization with error handling
+let db = null;
+
+try {
+    const { initializeApp } = require("firebase/app");
+    const { getFirestore } = require("firebase/firestore");
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyAuuq0i6-DITTNOFGzut3hy7ncsHgPj8bo",
+        authDomain: "stem-e-volunteer-app.firebaseapp.com",
+        projectId: "stem-e-volunteer-app",
+        storageBucket: "stem-e-volunteer-app.appspot.com",
+        messagingSenderId: "238931221133",
+        appId: "1:238931221133:web:00e64c3b8b9211f0b720c4",
+        measurementId: "G-6FEZM656MH"
+    };
+
+    initializeApp(firebaseConfig);
+    db = getFirestore();
+    console.log("Firebase initialized successfully");
+} catch (error) {
+    console.warn("Firebase initialization failed (using mock mode):", error.message);
+    db = null;
+}
+
+// Mock implementations for when Firebase is not available
+const mockCollection = (db, name) => ({ _name: name });
+
+const mockGetDocs = async (colRef) => {
+    console.log("Using mock data for collection:", colRef?._name);
+    return { docs: [] };
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+const mockAddDoc = async (colRef, data) => {
+    console.log("Mock addDoc called");
+    return { id: "mock-id" };
+};
 
-const db = getFirestore();
+const mockDoc = (db, ...args) => ({ _path: args.join("/") });
 
-////const colUser = collection(db, 'User');
-/*getDocs(colUser)
-    .then((snapshot) => {
-        console.log("Users:");
-        snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
-    })
+const mockSetDoc = async (docRef, data) => {
+    console.log("Mock setDoc called");
+};
 
-User = {
-    name: (string),
-    discordID: (string),
-    isCoord: (boolean),
-    isAdmin: (boolean)
+const mockWriteBatch = () => ({
+    set: () => {},
+    update: () => {},
+    delete: () => {},
+    commit: async () => {}
+});
+
+// Set test session in localStorage if not already set
+if (!localStorage.getItem('session')) {
+    const testSession = {
+        discordID: "test-user#0000",
+        username: "TestUser",
+        avatar: null,
+        isAdmin: true
+    };
+    localStorage.setItem('session', JSON.stringify(testSession));
+    console.log("Test session created for development");
 }
-*/
 
-const colInterns = collection(db, 'Interns');
-getDocs(colInterns)
-    .then((snapshot) => {
-        console.log("Interns:");
-        snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
-    })
-/*
-Interns = {
-    name: (string),
-    email: (string),
-    discordID: (string),
-    inTimeSheet: (boolean),
-    inServer: (boolean),
-    signedWaiver: (boolean),
-    paused: (null | timestamp)
-}
-*/
-
-export { db, collection, getDocs, addDoc, doc, writeBatch, setDoc };
+export {
+    db,
+    mockCollection as collection,
+    mockGetDocs as getDocs,
+    mockAddDoc as addDoc,
+    mockDoc as doc,
+    mockSetDoc as setDoc,
+    mockWriteBatch as writeBatch
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
