@@ -1,5 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, setDoc, query, where } from "./index.js"
+
+async function findUser(dID, dName) {
+    try {
+        const colUser = collection(db, 'User');
+        const q = query(colUser, where("discordID", "==", String(dID)));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+            console.log("test");
+            return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        } else {
+            const ref = await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
+            return;
+        }
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
 
 export default class Oauth {
     constructor() {
@@ -36,8 +55,44 @@ export default class Oauth {
 
     }
 
-    async getUser(token) {
+    async getUserGuild(token) {
         const response = await fetch("https://discord.com/api/users/@me/guilds", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+            }
+        });
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error('Error details:', errorDetails);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorDetails)}`);
+        }
+
+        const result = await response.json();
+        return result;
+    }
+
+    async getUser(token) {
+        const response = await fetch("https://discord.com/api/users/@me", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+            }
+        });
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error('Error details:', errorDetails);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorDetails)}`);
+        }
+
+        const result = await response.json();
+        return result;
+    }
+
+    async getServerUser(token, guildID) {
+        const response = await fetch(`https://discord.com/api/users/@me/guilds/${guildID}/member`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -58,31 +113,42 @@ export default class Oauth {
 export const Authenticate = ({session, setSession }) => {
 
     const navigate = useNavigate();
+;
+    const userLookUp = async (dID, dName) => {
+        try {
+            await findUser(dID, dName);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     useEffect(() => {
-        const auth = new Oauth();
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-
-        if (code) {
-            auth.getToken(code).then((token) => {
-                auth.getUser(token).then((user) => {
-                    for (let i = 0; i < user.length; i++) {
-                        if (user[i].id == "784234582999695421") {
-                            setSession(token);
-                            localStorage.setItem('session', JSON.stringify(token));
+        const runAuth = async () => {
+            const auth = new Oauth();
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get("code");
+            try {
+                if (code) {
+                    const token = await auth.getToken(code);
+                    const guilds = await auth.getUserGuild(token);
+                    for (let i = 0; i < guilds.length; i++) {
+                        if (guilds[i].id == "784234582999695421") { //STEME server ID
+                            const user = await auth.getUser(token);
+                            const serverUser = await auth.getServerUser(token, "784234582999695421")
+                            userLookUp(user.id, serverUser.nick);
+                            setSession(user.id);
+                            localStorage.setItem('session', JSON.stringify(user.id));
                             break;
                         }
                     }
-                    if(!session) {
-                        navigate('/', { state: { error: "Unauthorized user" } });
-                    }
-                    
-                })
-                
-            });
+                }
+            } finally {
+                if (!session) {
+                    navigate('/', { state: { error: "Unauthorized user" } });
+                }
+            }   
         }
-        
+        runAuth();
     }, []);
     return (
         <div>
