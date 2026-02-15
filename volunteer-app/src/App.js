@@ -18,6 +18,8 @@ import MemberTable from "./Pages/members";
 import { Authenticate } from "./DiscordAuth.js";
 import Logout from "./Pages/logout";
 import Ticketing from "./Ticketing/Ticketing.js";
+import PermissionDenied from "./Pages/PermissionDenied.js";
+import ProtectedRoute from "./ProtectedRoute.js";
 
 function App() {
     const [session, setSession] = useState(null);
@@ -32,6 +34,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/login" element={login} />
+                <Route path="/permission-denied" element={<PermissionDenied />} />
                 {!session ? (
                     <>
                         <Route path="/" element={<Login />} />
@@ -39,13 +42,38 @@ function App() {
                 ): (
                     <>
                         <Route path="/" element={<Home />} />
-                        <Route path="/userpage" element={<AccPageOthers />} />
-                        <Route path="/samplepage" element={<SamplePage />} />
-                        <Route path="/ticketing" element={<Ticketing />} />
-                        <Route path="/supportform" element={<SupportForm />} />
+                        <Route path="/userpage" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <AccPageOthers />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/samplepage" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <SamplePage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/ticketing" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <Ticketing />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/supportform" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <SupportForm />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/error" element={<ErrorPage />} />
-                        <Route path="/access" element={<AccessManagement />} />
-                        <Route path="/members" element={<MemberTable />} />
+                        
+                        <Route path="/access" element={
+                            <ProtectedRoute session={session} allowedRoles={['admin']}>
+                                <AccessManagement />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/members" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <MemberTable />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/logout" element={<Logout setSession={setSession} />} />
                         <Route path="*" element={<Navigate to="/" />} />
                     </>
