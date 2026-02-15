@@ -1,0 +1,45 @@
+.permission-denied-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background-color: #f5f5f5;
+}
+
+.permission-denied-container h1 {
+    margin-top: 0;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.permission-denied-container p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.permission-denied-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.permission-denied-container a:hover {
+    text-decoration: underline;
+}
+
+.home-button {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.home-button:hover {
+    background-color: #333;
+}

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { db, collection, getDocs, addDoc, doc, writeBatch, setDoc } from "../index.js"
-//import { auth } from "./index.js";
-
-//db = getFirestore(), pre-defined in index.js
+import { db, collection, getDocs, doc, setDoc } from "../index.js"
 
 async function loadData() {
     try {
@@ -17,21 +15,21 @@ async function loadData() {
     }
 }
 
-/*const initialData = [
-  { firstName: 'Intern 1', lastName: 'L1', email: 'intern1@gmail.com', discordID: 'intern1', isCoordinator: true, isAdmin: false },
-  { firstName: 'Intern 2', lastName: 'L2', email: 'intern2@gmail.com', discordID: 'intern2', isCoordinator: true, isAdmin: true },
-  { firstName: 'Intern 3', lastName: 'L3', email: 'intern3@gmail.com', discordID: 'intern3', isCoordinator: false, isAdmin: false },
-];*/
-
 const AccessManagement = () => {
-    const [data, setData] = useState([]);
-    const [pageData, setPageData] = useState([]);
+  const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const session = JSON.parse(localStorage.getItem('session'));
 
   useEffect(() => {
+      if (!session || !session.isAdmin) {
+          navigate('/permission-denied');
+          return;
+      }
+
       const fetchData = async () => {
           try {
-              const loadedData = await loadData();
+              const loadedData = await loadData(); 
               setData(loadedData);
           } catch (error) {
               console.error("Error fetching data:", error);
@@ -40,16 +38,7 @@ const AccessManagement = () => {
       };
 
       fetchData();
-  }, []);
-
-  useEffect(() => {
-      const updatePageData = async () => {
-        let subsetData = data.slice((page - 1) * 10, Math.min(data.length, (page * 10)));
-        setPageData(subsetData);
-      };
-
-      updatePageData();
-  }, [data, page]);
+  }, [navigate, session]);
 
   const handleCheckboxChange = (index, field) => {
     const updatedData = data.map((row, i) => 
@@ -76,7 +65,7 @@ const AccessManagement = () => {
     };
 
   const handleNextPage = () => {
-    if (data.length > page * 10) setPage(page + 1);
+    setPage(page + 1);
   };
 
   const handlePreviousPage = () => {
@@ -108,8 +97,8 @@ const AccessManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {pageData.map((row, index) => (
-              <tr key={index + ((page-1) * 10)}>
+            {data.map((row, index) => (
+              <tr key={index}>
                 <td>{row.name.substring(0, row.name.lastIndexOf(" "))}</td>
                 <td>{row.name.split(" ").slice(-1)}</td>
                 <td>TBD</td>
@@ -118,14 +107,14 @@ const AccessManagement = () => {
                   <input
                     type="checkbox"
                     checked={row.isCoord}
-                    onChange={() => handleCheckboxChange(index + ((page-1) * 10), 'isCoord')}
+                    onChange={() => handleCheckboxChange(index, 'isCoord')}
                   />
                 </td>
                 <td>
                   <input
                     type="checkbox"
                     checked={row.isAdmin}
-                    onChange={() => handleCheckboxChange(index + ((page-1) * 10), 'isAdmin')}
+                    onChange={() => handleCheckboxChange(index, 'isAdmin')}
                   />
                 </td>
               </tr>
