@@ -1,6 +1,25 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, getDocs, query, where } from './index.js';
+import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
+
+async function findUser(dID, dName) {
+    try {
+        const colUser = collection(db, 'User');
+        const q = query(colUser, where("discordID", "==", String(dID)));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+            console.log("test");
+            await updateDoc(colUser, { name: dName });
+            return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        } else {
+            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
+            return;
+        }
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
 
 export default class Oauth {
     constructor() {
