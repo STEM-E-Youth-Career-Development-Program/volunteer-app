@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, setDoc, query, where } from "./index.js"
+import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
 
 async function findUser(dID, dName) {
     try {
@@ -9,9 +9,10 @@ async function findUser(dID, dName) {
         const snapshot = await getDocs(q);
         if (!snapshot.empty) {
             console.log("test");
+            await updateDoc(colUser, { name: dName });
             return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         } else {
-            const ref = await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
+            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
             return;
         }
     } catch (error) {
