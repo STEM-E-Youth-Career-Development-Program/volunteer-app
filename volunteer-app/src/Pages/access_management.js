@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { db, collection, getDocs, doc, setDoc } from "../index.js"
+import { db, collection, getDocs, doc, setDoc } from "../index.js";
 
 async function loadData() {
     try {
@@ -18,63 +18,84 @@ async function loadData() {
 const AccessManagement = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const session = JSON.parse(localStorage.getItem('session'));
 
   useEffect(() => {
-      if (!session || !session.isAdmin) {
-          navigate('/permission-denied');
-          return;
+    const verifyAndLoad = async () => {
+      const raw = localStorage.getItem('session');
+      let session = null;
+      try {
+        session = raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        session = null;
       }
 
-      const fetchData = async () => {
-          try {
-              const loadedData = await loadData(); 
-              setData(loadedData);
-          } catch (error) {
-              console.error("Error fetching data:", error);
-              setData([]);
-          }
-      };
+      if (!session) {
+        navigate('/loginform');
+        return;
+      }
 
-      fetchData();
-  }, [navigate, session]);
+      if (!session.isAdmin) {
+        navigate('/permission-denied');
+        return;
+      }
+
+      try {
+        const loadedData = await loadData();
+        setData(loadedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAndLoad();
+  }, [navigate]);
+
+  const pageSize = 10;
+  const pageData = data.slice((page - 1) * pageSize, page * pageSize);
 
   const handleCheckboxChange = (index, field) => {
-    const updatedData = data.map((row, i) => 
-      i === index ? { ...row, [field]: !row[field] } : row
+    const absoluteIndex = (page - 1) * pageSize + index;
+    const updatedData = data.map((row, i) =>
+      i === absoluteIndex ? { ...row, [field]: !row[field] } : row
     );
     setData(updatedData);
   };
 
-    const handleSave = async () => {
-        try {
-            const updatePromises = data.map((row) => {
-                const userRef = doc(db, 'User', row.id);
-                return setDoc(userRef, {
-                    isAdmin: row.isAdmin,
-                    isCoord: row.isCoord
-                }, { merge: true }); 
-            });
+  const handleSave = async () => {
+    try {
+      const updatePromises = data.map((row) => {
+        const userRef = doc(db, 'User', row.id);
+        return setDoc(userRef, {
+          isAdmin: row.isAdmin,
+          isCoord: row.isCoord
+        }, { merge: true }); 
+      });
 
-            await Promise.all(updatePromises); 
-            console.log('All rows saved successfully!');
-        } catch (error) {
-            console.error('Error saving data:', error);
-        }
-    };
+      await Promise.all(updatePromises); 
+      console.log('All rows saved successfully!');
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
 
   const handleNextPage = () => {
-    setPage(page + 1);
+    if (data.length > page * pageSize) setPage(page + 1);
   };
 
   const handlePreviousPage = () => {
     if (page > 1) setPage(page - 1);
   };
 
-    return (
-     <div>
-     <NavBarAdmin />
+  if (loading) return null;
+
+  return (
+    <div>
+      <NavBarAdmin />
 
       <div className="access-table">
         <table>
