@@ -18,47 +18,35 @@ const firebaseConfig = {
     measurementId: "G-6FEZM656MH"
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+const mockAddDoc = async (colRef, data) => {
+    console.log("Mock addDoc called");
+    return { id: "mock-id" };
+};
 
-const db = getFirestore();
+const mockDoc = (db, ...args) => ({ _path: args.join("/") });
 
-////const colUser = collection(db, 'User');
-/*getDocs(colUser)
-    .then((snapshot) => {
-        console.log("Users:");
-        snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
-    })
+const mockSetDoc = async (docRef, data) => {
+    console.log("Mock setDoc called");
+};
 
-User = {
-    name: (string),
-    discordID: (string),
-    isCoord: (boolean),
-    isAdmin: (boolean)
+const mockWriteBatch = () => ({
+    set: () => {},
+    update: () => {},
+    delete: () => {},
+    commit: async () => {}
+});
+
+// Set test session in localStorage if not already set
+if (!localStorage.getItem('session')) {
+    const testSession = {
+        discordID: "test-user#0000",
+        username: "TestUser",
+        avatar: null,
+        isAdmin: true
+    };
+    localStorage.setItem('session', JSON.stringify(testSession));
+    console.log("Test session created for development");
 }
-*/
-
-const colInterns = collection(db, 'Interns');
-getDocs(colInterns)
-    .then((snapshot) => {
-        console.log("Interns:");
-        snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
-    })
-/*
-Interns = {
-    name: (string),
-    email: (string),
-    discordID: (string),
-    inTimeSheet: (boolean),
-    inServer: (boolean),
-    signedWaiver: (boolean),
-    paused: (null | timestamp)
-}
-*/
 
 export { db, collection, deleteDoc, getDocs, addDoc, doc, writeBatch, setDoc, query, where, updateDoc};
 
