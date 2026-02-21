@@ -84,6 +84,39 @@ function Ticketing() {
         if (!formData.priority) errors.priority = "Priority is required";
         return errors;
     };
+    return (
+        <div className="ticket-dropdown">
+            <span className="drop">Filter By</span>
+            <div className="ticket-dropdown-content">
+                <div className="Section">
+                    <h4>Status</h4>
+                    <br />
+                    <div className="ticket-dropdowndiv">
+                        {[0, 1, 2, 3].map((status) => (
+                            <CheckboxElement label={statusLabels[status]} onChange={() => handleCheckboxChange('status', status)} />
+                        ))}
+                    </div>
+                </div>
+                <div className="Section">
+                    <h4>Priority</h4>
+                    <br />
+                    <div className="ticket-dropdowndiv">
+                        {[1, 2, 3, 4, 5].map((priority) => (
+                            <CheckboxElement label={priority} onChange={() => handleCheckboxChange('priority', priority)} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+function pagination(totalItems, itemsPerPage, currentPage) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+    }
 
     const handleSubmitTicket = async (e) => {
         e.preventDefault();

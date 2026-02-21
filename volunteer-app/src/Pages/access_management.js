@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { db, collection, getDocs, addDoc, doc, writeBatch, setDoc } from "../index.js"
-//import { auth } from "./index.js";
-
-
-//db = getFirestore(), pre-defined in index.js
+import { db, collection, getDocs, doc, setDoc } from "../index.js"
 
 async function loadData() {
     try {
@@ -18,19 +15,18 @@ async function loadData() {
     }
 }
 
-
-/*const initialData = [
-  { firstName: 'Intern 1', lastName: 'L1', email: 'intern1@gmail.com', discordID: 'intern1', isCoordinator: true, isAdmin: false },
-  { firstName: 'Intern 2', lastName: 'L2', email: 'intern2@gmail.com', discordID: 'intern2', isCoordinator: true, isAdmin: true },
-  { firstName: 'Intern 3', lastName: 'L3', email: 'intern3@gmail.com', discordID: 'intern3', isCoordinator: false, isAdmin: false },
-];*/
-
-
 const AccessManagement = () => {
   const [data, setData] = useState([]);
-    const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const session = JSON.parse(localStorage.getItem('session'));
 
   useEffect(() => {
+      if (!session || !session.isAdmin) {
+          navigate('/permission-denied');
+          return;
+      }
+
       const fetchData = async () => {
           try {
               const loadedData = await loadData(); 
@@ -42,7 +38,7 @@ const AccessManagement = () => {
       };
 
       fetchData();
-  }, []);
+  }, [navigate, session]);
 
   const handleCheckboxChange = (index, field) => {
     const updatedData = data.map((row, i) => 

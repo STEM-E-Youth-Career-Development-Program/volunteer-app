@@ -1,5 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
+
+async function findUser(dID, dName) {
+    try {
+        const colUser = collection(db, 'User');
+        const q = query(colUser, where("discordID", "==", String(dID)));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+            console.log("test");
+            await updateDoc(colUser, { name: dName });
+            return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        } else {
+            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
+            return;
+        }
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
 
 export default class Oauth {
     constructor() {
@@ -33,15 +53,13 @@ export default class Oauth {
 
         const result = await response.json();
         return result.access_token;
-
     }
 
-    async getUser(token) {
-        const response = await fetch("https://discord.com/api/users/@me/guilds", {
+    async getDiscordUser(token) {
+        const response = await fetch("https://discord.com/api/users/@me", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/x-www-form-urlencoded",
             }
         });
         if (!response.ok) {
@@ -49,14 +67,21 @@ export default class Oauth {
             console.error('Error details:', errorDetails);
             throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorDetails)}`);
         }
+        return response.json();
+    }
 
-        const result = await response.json();
-        return result;
+    async getUserRoles(discordId) {
+        const userQuery = query(collection(db, 'User'), where('discordID', '==', discordId));
+        const querySnapshot = await getDocs(userQuery);
+        if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            return userDoc.data();
+        }
+        return null;
     }
 }
 
-export const Authenticate = ({session, setSession }) => {
-
+export const Authenticate = ({ setSession }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,28 +90,21 @@ export const Authenticate = ({session, setSession }) => {
         const code = params.get("code");
 
         if (code) {
-            auth.getToken(code).then((token) => {
-                auth.getUser(token).then((user) => {
-                    for (let i = 0; i < user.length; i++) {
-                        if (user[i].id == "784234582999695421") {
-                            setSession(token);
-                            localStorage.setItem('session', JSON.stringify(token));
-                            break;
-                        }
-                    }
-                    if(!session) {
-                        navigate('/', { state: { error: "Unauthorized user" } });
-                    }
-                    
-                })
-                
+            auth.getToken(code).then(async (token) => {
+                const discordUser = await auth.getDiscordUser(token);
+                const userRoles = await auth.getUserRoles(discordUser.id);
+
+                if (userRoles) {
+                    const sessionData = { token, user: { ...userRoles, role: userRoles.role || 'member' } };
+                    setSession(sessionData);
+                    localStorage.setItem('session', JSON.stringify(sessionData));
+                    navigate('/');
+                } else {
+                    navigate('/permission-denied');
+                }
             });
         }
-        
-    }, []);
-    return (
-        <div>
-            <p>{session}</p>
-        </div>
-    );
+    }, [navigate, setSession]);
+
+    return <div>Authenticating...</div>;
 };

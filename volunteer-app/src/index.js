@@ -4,37 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Firebase initialization with error handling
-let db = null;
-
-try {
-    const { initializeApp } = require("firebase/app");
-    const { getFirestore } = require("firebase/firestore");
-    
-    const firebaseConfig = {
-        apiKey: "AIzaSyAuuq0i6-DITTNOFGzut3hy7ncsHgPj8bo",
-        authDomain: "stem-e-volunteer-app.firebaseapp.com",
-        projectId: "stem-e-volunteer-app",
-        storageBucket: "stem-e-volunteer-app.appspot.com",
-        messagingSenderId: "238931221133",
-        appId: "1:238931221133:web:00e64c3b8b9211f0b720c4",
-        measurementId: "G-6FEZM656MH"
-    };
-
-    initializeApp(firebaseConfig);
-    db = getFirestore();
-    console.log("Firebase initialized successfully");
-} catch (error) {
-    console.warn("Firebase initialization failed (using mock mode):", error.message);
-    db = null;
-}
-
-// Mock implementations for when Firebase is not available
-const mockCollection = (db, name) => ({ _name: name });
-
-const mockGetDocs = async (colRef) => {
-    console.log("Using mock data for collection:", colRef?._name);
-    return { docs: [] };
+import { initializeApp } from "firebase/app";
+import { getFirestore, deleteDoc, collection, getDocs, addDoc, writeBatch, doc, setDoc, updateDoc, query, where } from "firebase/firestore"; 
+// https://firebase.google.com/docs/web/setup#available-libraries
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: "AIzaSyAuuq0i6-DITTNOFGzut3hy7ncsHgPj8bo",
+    authDomain: "stem-e-volunteer-app.firebaseapp.com",
+    projectId: "stem-e-volunteer-app",
+    storageBucket: "stem-e-volunteer-app.appspot.com",
+    messagingSenderId: "238931221133",
+    appId: "1:238931221133:web:00e64c3b8b9211f0b720c4",
+    measurementId: "G-6FEZM656MH"
 };
 
 const mockAddDoc = async (colRef, data) => {
@@ -67,15 +48,7 @@ if (!localStorage.getItem('session')) {
     console.log("Test session created for development");
 }
 
-export {
-    db,
-    mockCollection as collection,
-    mockGetDocs as getDocs,
-    mockAddDoc as addDoc,
-    mockDoc as doc,
-    mockSetDoc as setDoc,
-    mockWriteBatch as writeBatch
-};
+export { db, collection, deleteDoc, getDocs, addDoc, doc, writeBatch, setDoc, query, where, updateDoc};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

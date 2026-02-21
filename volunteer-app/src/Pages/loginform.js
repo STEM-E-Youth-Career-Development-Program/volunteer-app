@@ -31,24 +31,22 @@ function Login() {
                             <img src={discordLogo} alt="Smartphones"></img>
                         </button>
                     </a>
-                    <p className="smalltext"><a href="/home">Need Help?</a></p>
-                    <p className="errortext smalltext">{error}</p>
-                    <hr style={{margin: '20px 0', border: 'none', borderTop: '1px solid #ccc'}} />
-                    <p className="smalltext" style={{fontSize: '12px', color: '#666'}}>Dev Mode:</p>
-                    <button 
-                        type="button" 
-                        onClick={handleDevLogin}
-                        style={{
-                            background: '#f0f0f0',
-                            border: '1px solid #ccc',
-                            padding: '10px 20px',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            fontSize: '14px'
-                        }}
+                    <p
+                        className="smalltext"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setShowHelp(!showHelp)}
                     >
-                        Enter as Test User
-                    </button>
+                        Need Help?
+                        {showHelp && (
+                            <p className="smalltext">
+                                If you're having trouble logging in:
+                                <br />
+                                • Make sure you're logged into Discord  
+                                <br />
+                                • Make sure you're in the STEME Discord server  
+                            </p>
+                        )}
+                    </p>
                 </div>
             </form>
         </div>
@@ -57,3 +55,4 @@ function Login() {
 }
 
 export default Login;
+
