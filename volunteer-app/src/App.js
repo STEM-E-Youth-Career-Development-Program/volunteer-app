@@ -54,7 +54,7 @@ function App() {
                         } />
                         <Route path="/ticketing" element={
                             <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
-                                <Ticketing />
+                                <Ticketing session={session} />
                             </ProtectedRoute>
                         } />
                         <Route path="/supportform" element={
