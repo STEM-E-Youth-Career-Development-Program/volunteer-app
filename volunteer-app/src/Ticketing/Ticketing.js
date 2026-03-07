@@ -84,73 +84,12 @@ function Ticketing() {
         if (!formData.priority) errors.priority = "Priority is required";
         return errors;
     };
-    return (
-        <div className="ticket-dropdown">
-            <span className="drop">Filter By</span>
-            <div className="ticket-dropdown-content">
-                <div className="Section">
-                    <h4>Status</h4>
-                    <br />
-                    <div className="ticket-dropdowndiv">
-                        {[0, 1, 2, 3].map((status) => (
-                            <CheckboxElement label={statusLabels[status]} onChange={() => handleCheckboxChange('status', status)} />
-                        ))}
-                    </div>
-                </div>
-                <div className="Section">
-                    <h4>Priority</h4>
-                    <br />
-                    <div className="ticket-dropdowndiv">
-                        {[1, 2, 3, 4, 5].map((priority) => (
-                            <CheckboxElement label={priority} onChange={() => handleCheckboxChange('priority', priority)} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-function pagination(totalItems, itemsPerPage, currentPage) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-    }
-
-    const handleSubmitTicket = async (e) => {
-        e.preventDefault();
-        const errors = validateForm();
-        
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            return;
-        }
-
-        try {
-            const newTicket = {
-                ...formData,
-                id: Date.now().toString(),
-                date: new Date().toISOString().split('T')[0],
-                sender: "currentUser",
-                status: 0
-            };
-            
-            setTickets(prev => [newTicket, ...prev]);
-            
-            setFormData({
-                title: "",
-                description: "",
-                recipient: "",
-                priority: "1",
-                status: 0
-            });
-            setShowForm(false);
-            setSubmitMessage("Ticket submitted successfully!");
-            setTimeout(() => setSubmitMessage(""), 3000);
-        } catch (error) {
-            console.error("Error submitting ticket:", error);
-            setSubmitMessage("Error submitting ticket");
+    const handleCheckboxChange = (type, value) => {
+        if (type === 'status') {
+            toggleStatusFilter(value);
+        } else if (type === 'priority') {
+            togglePriorityFilter(value);
         }
     };
 
@@ -186,14 +125,40 @@ function pagination(totalItems, itemsPerPage, currentPage) {
         });
     };
 
-    const filteredTickets = filterTickets();
-    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedTickets = filteredTickets.slice(startIndex, startIndex + itemsPerPage);
+    const handleSubmitTicket = async (e) => {
+        e.preventDefault();
+        const errors = validateForm();
+        
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
 
-    const getUserName = (userId) => {
-        const user = users.find(u => u.id === userId);
-        return user ? user.name : "Unknown";
+        try {
+            const newTicket = {
+                ...formData,
+                id: Date.now().toString(),
+                date: new Date().toISOString().split('T')[0],
+                sender: "currentUser",
+                status: 0
+            };
+            
+            setTickets(prev => [newTicket, ...prev]);
+            
+            setFormData({
+                title: "",
+                description: "",
+                recipient: "",
+                priority: "1",
+                status: 0
+            });
+            setShowForm(false);
+            setSubmitMessage("Ticket submitted successfully!");
+            setTimeout(() => setSubmitMessage(""), 3000);
+        } catch (error) {
+            console.error("Error submitting ticket:", error);
+            setSubmitMessage("Error submitting ticket");
+        }
     };
 
     const handleEditTicket = (ticketId) => {
@@ -243,6 +208,16 @@ function pagination(totalItems, itemsPerPage, currentPage) {
             setSubmitMessage("Error updating ticket");
         }
     };
+
+    const getUserName = (userId) => {
+        const user = users.find(u => u.id === userId);
+        return user ? user.name : "Unknown";
+    };
+
+    const filteredTickets = filterTickets();
+    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedTickets = filteredTickets.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <>

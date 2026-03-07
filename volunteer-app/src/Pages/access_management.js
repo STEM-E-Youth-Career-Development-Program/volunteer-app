@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './access_management.css';
 import NavBarAdmin from './navBarAdmin';
-import { db, collection, getDocs, doc, setDoc } from "../index.js"
+import { db } from "../firebase.js"
+import { collection, getDocs, doc, setDoc } from "../index.js"
 
 async function loadData() {
     try {

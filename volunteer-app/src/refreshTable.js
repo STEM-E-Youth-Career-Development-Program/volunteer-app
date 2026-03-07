@@ -1,4 +1,5 @@
-import { db, doc } from './index.js';
+import { db } from './firebase.js';
+import { doc } from './index.js';
 import { deleteDoc } from "firebase/firestore";
 
 export const refreshTable = async (members) => {

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
+import { db } from "./firebase.js"
+import { collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
 
 async function findUser(dID, dName) {
     try {

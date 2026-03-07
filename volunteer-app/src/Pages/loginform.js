@@ -2,11 +2,13 @@ import "./loginform.css"
 import discordLogo from './static/discord.png'
 import Oauth from './../DiscordAuth.js'
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 
 function Login() {
     const location = useLocation();
     const navigate = useNavigate();
+    const [showHelp, setShowHelp] = useState(false);
     const error = location.state?.error;
     let auth = new Oauth();
 
