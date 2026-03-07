@@ -43,7 +43,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/userpage" element={<AccPageOthers />} />
                         <Route path="/samplepage" element={<SamplePage />} />
-                        <Route path="/ticketing" element={<Ticketing />} />
+                        <Route path="/ticketing" element={<Ticketing session={session} />} />
                         <Route path="/supportform" element={<SupportForm />} />
                         <Route path="/error" element={<ErrorPage />} />
                         
