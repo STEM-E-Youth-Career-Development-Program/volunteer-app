@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
+import { db } from "./firebase.js"
+import { collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
 
 async function findUser(dID, dName) {
     try {
@@ -9,8 +10,9 @@ async function findUser(dID, dName) {
         const snapshot = await getDocs(q);
         if (!snapshot.empty) {
             console.log("test");
-            await updateDoc(colUser, { name: dName });
-            return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            const userDocRef = doc(db, 'User', snapshot.docs[0].id);
+            await updateDoc(userDocRef, { name: dName });
+            return snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
         } else {
             await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
             return;

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
-import { db, collection, getDocs, doc, writeBatch, setDoc } from "../index.js";
+import { db } from "../firebase.js";
+import { collection, getDocs, doc, writeBatch, setDoc } from "../index.js";
 import writeToGoogleSheet from "../sheets.js";
 import retrieveWaiver from "../Waiver";
 import checkDiscord from "../checkDiscord";
