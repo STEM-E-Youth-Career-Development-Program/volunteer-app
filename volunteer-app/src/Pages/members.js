@@ -146,21 +146,18 @@ function MemberTable() {
             <NavBarAdmin />
             <div className="access-table">
 
-                // Loading onboarding state
                 {loading && (
                     <div className="empty-state">
                         Loading onboarding data...
                     </div>
                 )}
 
-                // Error handling UI
                 {error && (
                     <div className="error-state">
                         {error}
                     </div>
                 )}
 
-                // Empty onboarding state
                 {!loading && !error && members.length === 0 && (
                     <div className="empty-state">
                         No interns have been onboarded yet.
