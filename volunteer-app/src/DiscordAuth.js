@@ -14,7 +14,7 @@ async function findUser(dID, dName) {
             await updateDoc(userDocRef, { name: dName });
             return snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
         } else {
-            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, name: dName })
+            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, isTicketing: false, name: dName })
             return;
         }
     } catch (error) {
@@ -77,7 +77,7 @@ export default class Oauth {
         const querySnapshot = await getDocs(userQuery);
         if (!querySnapshot.empty) {
             const userDoc = querySnapshot.docs[0];
-            return userDoc.data();
+            return { ...userDoc.data(), id: userDoc.id};
         }
         return null;
     }
