@@ -5,9 +5,20 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, deleteDoc, collection, getDocs, addDoc, writeBatch, doc, setDoc, updateDoc, query, where } from "firebase/firestore"; 
-// https://firebase.google.com/docs/web/setup#available-libraries
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    addDoc, 
+    writeBatch, 
+    doc, 
+    setDoc, 
+    deleteDoc, 
+    query, 
+    where, 
+    updateDoc 
+} from "firebase/firestore"; 
+
 const firebaseConfig = {
     apiKey: "AIzaSyAuuq0i6-DITTNOFGzut3hy7ncsHgPj8bo",
     authDomain: "stem-e-volunteer-app.firebaseapp.com",
@@ -19,52 +30,37 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const db = getFirestore();
-
-////const colUser = collection(db, 'User');
-/*getDocs(colUser)
-    .then((snapshot) => {
-        console.log("Users:");
-        snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
-    })
-
-User = {
-    name: (string),
-    discordID: (string),
-    isCoord: (boolean),
-    isAdmin: (boolean)
-}
-*/
-
+// Fetching Interns for console log
 const colInterns = collection(db, 'Interns');
 getDocs(colInterns)
     .then((snapshot) => {
         console.log("Interns:");
         snapshot.docs.forEach((doc) => {
-            console.log(doc.data());
-        })
+            console.log(doc.id, " => ", doc.data());
+        });
     })
-/*
-Interns = {
-    name: (string),
-    email: (string),
-    discordID: (string),
-    inTimeSheet: (boolean),
-    inServer: (boolean),
-    signedWaiver: (boolean),
-    paused: (null | timestamp)
-}
-*/
+    .catch(err => console.error("Firebase fetch error:", err));
 
-export { db, collection, deleteDoc, getDocs, addDoc, doc, writeBatch, setDoc, query, where, updateDoc};
+// Export Firebase functions (db is exported from firebase.js)
+export { 
+    collection, 
+    deleteDoc, 
+    getDocs, 
+    addDoc, 
+    doc, 
+    writeBatch, 
+    setDoc, 
+    query, 
+    where, 
+    updateDoc 
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <App />
+    <App />
 );
 
 reportWebVitals();

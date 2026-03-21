@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./members.css";
 import NavBarAdmin from "./navBarAdmin";
-import { db, collection, getDocs, doc, writeBatch, setDoc } from "../index.js";
+import { db } from "../firebase.js";
+import { collection, getDocs, doc, writeBatch, setDoc } from "../index.js";
 import writeToGoogleSheet from "../sheets.js";
 import retrieveWaiver from "../Waiver";
 import checkDiscord from "../checkDiscord";
@@ -145,21 +146,18 @@ function MemberTable() {
             <NavBarAdmin />
             <div className="access-table">
 
-                // Loading onboarding state
                 {loading && (
                     <div className="empty-state">
                         Loading onboarding data...
                     </div>
                 )}
 
-                // Error handling UI
                 {error && (
                     <div className="error-state">
                         {error}
                     </div>
                 )}
 
-                // Empty onboarding state
                 {!loading && !error && members.length === 0 && (
                     <div className="empty-state">
                         No interns have been onboarded yet.

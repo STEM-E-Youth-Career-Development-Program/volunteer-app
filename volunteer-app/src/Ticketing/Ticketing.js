@@ -24,7 +24,15 @@ const mockUsers = [
     { id: "admin2", name: "Admin User 2" },
 ];
 
-function Ticketing({ session }) { // Destructure session from props
+function Ticketing({ session }) {
+    // Determine if user is admin - check multiple possible fields
+    const isAdmin = session?.user?.isAdmin === true || session?.user?.role === 'admin';
+    const currentUserId = session?.user?.discordID;
+    
+    // Debug logging
+    console.log('Ticketing.js - Session:', session);
+    console.log('Ticketing.js - Is Admin:', isAdmin);
+    console.log('Ticketing.js - Current User ID:', currentUserId);
     const [showForm, setShowForm] = useState(false);
     const [editingTicketId, setEditingTicketId] = useState(null);
     const [tickets, setTickets] = useState(() => {
