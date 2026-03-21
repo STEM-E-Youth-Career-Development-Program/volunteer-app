@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+// latest version
+import React, { useState, useEffect, useRef } from "react";
 import NavBarAdmin from "../Pages/navBarAdmin";
 import "./Ticketing.css"
+import { db } from "../firebase.js"
+import { collection, getDocs, doc, updateDoc, addDoc } from "../index.js"
 
 const statusLabels = {
     0: "Awaiting Triaging",
@@ -9,43 +12,53 @@ const statusLabels = {
     3: "Closed"
 };
 
-// Mock ticket data for development
-const mockTickets = [
-    { id: "1", title: "Login Issue", description: "User cannot login", sender: "user1", recipient: "admin1", status: 0, priority: 2, date: "2024-01-10", assignedTeam: "none" },
-    { id: "2", title: "Database Error", description: "Database connection failed", sender: "user2", recipient: "admin2", status: 1, priority: 4, date: "2024-01-11", assignedTeam: "fast to resolve" },
-    { id: "3", title: "UI Bug", description: "Button not responsive", sender: "user3", recipient: "admin1", status: 2, priority: 1, date: "2024-01-12", assignedTeam: "slow to resolve" },
-];
+async function loadTicket() {
+    try {
+        const colTickets = collection(db, 'Tickets');
+        const snapshot = await getDocs(colTickets);
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
 
-const mockUsers = [
-    { id: "user1", name: "John Smith" },
-    { id: "user2", name: "Jane Doe" },
-    { id: "user3", name: "Mike Johnson" },
-    { id: "admin1", name: "Admin User 1" },
-    { id: "admin2", name: "Admin User 2" },
-];
+async function loadUsers() {
+    try {
+        const colUsers = collection(db, 'User');
+        const snapshot = await getDocs(colUsers);
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Error loading data:", error);
+        return [];
+    }
+}
+
+async function getName(userData, id) {
+    const res = await Promise.all(userData
+        .filter(user => user.id === id)
+        .map(async (user) => {
+            return [user.id, user.name];
+        })
+    );
+    return res;
+}
 
 function Ticketing({ session }) {
     // Determine if user is admin - check multiple possible fields
-    const isAdmin = session?.user?.isAdmin === true || session?.user?.role === 'admin';
+    const isAdmin = session?.user?.isAdmin === true || session?.user?.role === 'admin' || session?.user?.isTicketing === true;
     const currentUserId = session?.user?.discordID;
     
     // Debug logging
-    console.log('Ticketing.js - Session:', session);
-    console.log('Ticketing.js - Is Admin:', isAdmin);
-    console.log('Ticketing.js - Current User ID:', currentUserId);
+   // console.log('Ticketing.js - Session:', session);
+    //console.log('Ticketing.js - Is Admin:', isAdmin);
+  //  console.log('Ticketing.js - Current User ID:', currentUserId);
+
     const [showForm, setShowForm] = useState(false);
     const [editingTicketId, setEditingTicketId] = useState(null);
-    const [tickets, setTickets] = useState(() => {
-        // Load from localStorage, fallback to mock data
-        try {
-            const saved = localStorage.getItem('tickets');
-            return saved ? JSON.parse(saved) : mockTickets;
-        } catch (error) {
-            console.error("Error loading tickets from localStorage:", error);
-            return mockTickets;
-        }
-    });
-    const [users, setUsers] = useState(mockUsers);
+    const [tickets, setTickets] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [clientNames, setClientNames] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -53,18 +66,59 @@ function Ticketing({ session }) {
     const [activePriorityFilters, setActivePriorityFilters] = useState({});
     
     const [formData, setFormData] = useState({
+        id: "",
         title: "",
         description: "",
-        recipient: "",
         priority: "1",
         status: 0,
-        assignedTeam: "none"
+        recipient: "Untriaged",
+        date: "",
+        sender: ""
     });
     
     const [formErrors, setFormErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState("");
 
-    const isAdmin = session && session.role === 'admin';
+    useEffect(() => {
+        const fetchTicket = async () => {
+            try {
+                const loadedTicket = await loadTicket();
+                setTickets(loadedTicket);
+            } catch (error) {
+                console.error("Error fetching ticket data:", error);
+                setTickets([]);
+            }
+        };
+
+        fetchTicket();
+    }, []);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const loaded = await loadUsers();
+                setUsers(loaded);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setUsers([]);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const promises = tickets.map(async (row) => {
+                const output = await getName(users, row.sender);
+                return output;
+            });
+
+            const names = await Promise.all(promises);
+            setClientNames(names);
+            console.log(clientNames);
+        };
+        fetchData();
+    }, [tickets, users]);
 
     // Save tickets to localStorage whenever they change
     useEffect(() => {
@@ -91,7 +145,6 @@ function Ticketing({ session }) {
         const errors = {};
         if (!formData.title.trim()) errors.title = "Title is required";
         if (!formData.description.trim()) errors.description = "Description is required";
-        if (!formData.recipient) errors.recipient = "Recipient is required";
         if (!formData.priority) errors.priority = "Priority is required";
         return errors;
     };
@@ -99,35 +152,25 @@ function Ticketing({ session }) {
     const handleSubmitTicket = async (e) => {
         e.preventDefault();
         const errors = validateForm();
-        
+
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             return;
         }
 
         try {
-            const newTicket = {
+            const updatedFormData = {
                 ...formData,
-                id: Date.now().toString(),
                 date: new Date().toISOString().split('T')[0],
-                sender: "currentUser",
-                status: 0,
-                assignedTeam: "none"
+                sender: session.user.id,
             };
-            
-            setTickets(prev => [newTicket, ...prev]);
-            
-            setFormData({
-                title: "",
-                description: "",
-                recipient: "",
-                priority: "1",
-                status: 0,
-                assignedTeam: "none"
-            });
+
+            setFormData(updatedFormData);
             setShowForm(false);
-            setSubmitMessage("Ticket submitted successfully!");
-            setTimeout(() => setSubmitMessage(""), 3000);
+            await addDoc(collection(db, "Tickets"), updatedFormData);
+            alert("Ticket added successfully!");
+            setTickets(prev => [updatedFormData, ...prev]);
+
         } catch (error) {
             console.error("Error submitting ticket:", error);
             setSubmitMessage("Error submitting ticket");
@@ -181,12 +224,14 @@ function Ticketing({ session }) {
         if (ticket) {
             setEditingTicketId(ticketId);
             setFormData({
+                id: ticket.id,
                 title: ticket.title,
                 description: ticket.description,
-                recipient: ticket.recipient,
                 priority: String(ticket.priority),
                 status: ticket.status,
-                assignedTeam: ticket.assignedTeam || "none"
+                recipient: ticket.recipient || "Untriaged",
+                date: ticket.date,
+                sender: ticket.sender
             });
             setShowForm(true);
         }
@@ -195,34 +240,26 @@ function Ticketing({ session }) {
     const handleSaveEdit = async (e) => {
         e.preventDefault();
         const errors = validateForm();
-        
+
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             return;
         }
 
         try {
-            setTickets(prev => prev.map(t => 
-                t.id === editingTicketId 
-                    ? { ...t, ...formData }
-                    : t
-            ));
-            
+            const updatedTicket = { ...formData };
+            setTickets(prev =>
+                prev.map(t => t.id === editingTicketId ? updatedTicket : t)
+            );
+
             setShowForm(false);
             setEditingTicketId(null);
-            setFormData({
-                title: "",
-                description: "",
-                recipient: "",
-                priority: "1",
-                status: 0,
-                assignedTeam: "none"
-            });
-            setSubmitMessage("Ticket updated successfully!");
-            setTimeout(() => setSubmitMessage(""), 3000);
+            const docTarget = doc(db, "Tickets", updatedTicket.id);
+            await updateDoc(docTarget, updatedTicket);
+
+            alert("Ticket updated successfully!");
         } catch (error) {
             console.error("Error updating ticket:", error);
-            setSubmitMessage("Error updating ticket");
         }
     };
 
@@ -280,10 +317,9 @@ function Ticketing({ session }) {
                                         setFormData({
                                             title: "",
                                             description: "",
-                                            recipient: "",
                                             priority: "1",
                                             status: 0,
-                                            assignedTeam: "none"
+                                            recipient: "Untriaged"
                                         });
                                         setFormErrors({});
                                         setShowForm(!showForm);
@@ -292,13 +328,12 @@ function Ticketing({ session }) {
                                     <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="New" />
                                     {showForm && !editingTicketId ? "Cancel" : "New Ticket"}
                                 </button>
-                                {isAdmin && (
+                                {isAdmin && showForm && (
                                     <button 
                                         className="button" 
                                         onClick={() => setShowForm(!showForm)}
                                     >
-                                        <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="Edit" />
-                                        {showForm ? "Back to Table" : "Edit Ticket"}
+                                        Back to Table
                                     </button>
                                 )}
                             </div>
@@ -360,7 +395,7 @@ function Ticketing({ session }) {
                                                 <td>{ticket.description}</td>
                                                 <td>{statusLabels[ticket.status] || "Unknown"}</td>
                                                 <td>{ticket.priority}</td>
-                                                <td>{ticket.assignedTeam}</td>
+                                                <td>{ticket.recipient}</td>
                                                 {isAdmin && (
                                                     <td>
                                                         <button 
@@ -413,8 +448,9 @@ function Ticketing({ session }) {
                 {/* Ticket Submission/Edit Form */}
                 {showForm && (
                     <div className="container">
-                        <h1>{editingTicketId ? "Edit Ticket" : "New Ticket Submission"}</h1>
+                        <h1>{editingTicketId ? "Edit Ticket" : "New Ticket"}</h1>
                         <form onSubmit={editingTicketId ? handleSaveEdit : handleSubmitTicket}>
+                            <input type="hidden" id="id" name="id" value={formData.id}/>
                             <div className="form-group">
                                 <label htmlFor="title">Title of Ticket *</label>
                                 <input
@@ -439,22 +475,6 @@ function Ticketing({ session }) {
                                     onChange={handleFormChange}
                                 ></textarea>
                                 {formErrors.description && <p className="error">{formErrors.description}</p>}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="recipient">Assign To *</label>
-                                <select 
-                                    id="recipient" 
-                                    name="recipient" 
-                                    value={formData.recipient}
-                                    onChange={handleFormChange}
-                                >
-                                    <option value="">Select a recipient</option>
-                                    {users.map((user) => (
-                                        <option key={user.id} value={user.id}>{user.name}</option>
-                                    ))}
-                                </select>
-                                {formErrors.recipient && <p className="error">{formErrors.recipient}</p>}
                             </div>
 
                             <div className="form-group">
@@ -491,16 +511,16 @@ function Ticketing({ session }) {
 
                             {isAdmin && (
                                 <div className="form-group">
-                                    <label htmlFor="assignedTeam">Assigned Team</label>
+                                    <label htmlFor="recipient">Assigned Team</label>
                                     <select 
-                                        id="assignedTeam" 
-                                        name="assignedTeam" 
-                                        value={formData.assignedTeam}
+                                        id="recipient" 
+                                        name="recipient" 
+                                        value={formData.recipient}
                                         onChange={handleFormChange}
                                     >
-                                        <option value="none">None</option>
-                                        <option value="fast to resolve">Fast to Resolve</option>
-                                        <option value="slow to resolve">Slow to Resolve</option>
+                                        <option value="Untriaged">Untriaged</option>
+                                        <option value="Fast">Fast to Resolve</option>
+                                        <option value="Slow">Slow to Resolve</option>
                                     </select>
                                 </div>
                             )}
