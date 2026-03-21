@@ -37,7 +37,8 @@ const AccessManagement = () => {
         return;
       }
 
-      if (!session.isAdmin) {
+        if (!session.user.isAdmin) {
+            console.log(session);
         navigate('/permission-denied');
         return;
       }
@@ -116,6 +117,7 @@ const AccessManagement = () => {
               <th>Discord ID</th>
               <th>Volunteer Coordinator</th>
               <th>Admin</th>
+              <th>Ticketing Team</th>
             </tr>
           </thead>
           <tbody>
@@ -137,6 +139,13 @@ const AccessManagement = () => {
                     type="checkbox"
                     checked={row.isAdmin}
                     onChange={() => handleCheckboxChange(index, 'isAdmin')}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={row.isTicketing}
+                    onChange={() => handleCheckboxChange(index, 'isTicketing')}
                   />
                 </td>
               </tr>
