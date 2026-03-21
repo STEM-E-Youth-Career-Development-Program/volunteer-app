@@ -11,9 +11,9 @@ const statusLabels = {
 
 // Mock ticket data for development
 const mockTickets = [
-    { id: "1", title: "Login Issue", description: "User cannot login", sender: "user1", recipient: "admin1", status: 0, priority: 2, date: "2024-01-10" },
-    { id: "2", title: "Database Error", description: "Database connection failed", sender: "user2", recipient: "admin2", status: 1, priority: 4, date: "2024-01-11" },
-    { id: "3", title: "UI Bug", description: "Button not responsive", sender: "user3", recipient: "admin1", status: 2, priority: 1, date: "2024-01-12" },
+    { id: "1", title: "Login Issue", description: "User cannot login", sender: "user1", recipient: "admin1", status: 0, priority: 2, date: "2024-01-10", assignedTeam: "none" },
+    { id: "2", title: "Database Error", description: "Database connection failed", sender: "user2", recipient: "admin2", status: 1, priority: 4, date: "2024-01-11", assignedTeam: "fast to resolve" },
+    { id: "3", title: "UI Bug", description: "Button not responsive", sender: "user3", recipient: "admin1", status: 2, priority: 1, date: "2024-01-12", assignedTeam: "slow to resolve" },
 ];
 
 const mockUsers = [
@@ -57,11 +57,14 @@ function Ticketing({ session }) {
         description: "",
         recipient: "",
         priority: "1",
-        status: 0
+        status: 0,
+        assignedTeam: "none"
     });
     
     const [formErrors, setFormErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState("");
+
+    const isAdmin = session && session.role === 'admin';
 
     // Save tickets to localStorage whenever they change
     useEffect(() => {
@@ -93,11 +96,41 @@ function Ticketing({ session }) {
         return errors;
     };
 
-    const handleCheckboxChange = (type, value) => {
-        if (type === 'status') {
-            toggleStatusFilter(value);
-        } else if (type === 'priority') {
-            togglePriorityFilter(value);
+    const handleSubmitTicket = async (e) => {
+        e.preventDefault();
+        const errors = validateForm();
+        
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
+
+        try {
+            const newTicket = {
+                ...formData,
+                id: Date.now().toString(),
+                date: new Date().toISOString().split('T')[0],
+                sender: "currentUser",
+                status: 0,
+                assignedTeam: "none"
+            };
+            
+            setTickets(prev => [newTicket, ...prev]);
+            
+            setFormData({
+                title: "",
+                description: "",
+                recipient: "",
+                priority: "1",
+                status: 0,
+                assignedTeam: "none"
+            });
+            setShowForm(false);
+            setSubmitMessage("Ticket submitted successfully!");
+            setTimeout(() => setSubmitMessage(""), 3000);
+        } catch (error) {
+            console.error("Error submitting ticket:", error);
+            setSubmitMessage("Error submitting ticket");
         }
     };
 
@@ -133,40 +166,14 @@ function Ticketing({ session }) {
         });
     };
 
-    const handleSubmitTicket = async (e) => {
-        e.preventDefault();
-        const errors = validateForm();
-        
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            return;
-        }
+    const filteredTickets = filterTickets();
+    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedTickets = filteredTickets.slice(startIndex, startIndex + itemsPerPage);
 
-        try {
-            const newTicket = {
-                ...formData,
-                id: Date.now().toString(),
-                date: new Date().toISOString().split('T')[0],
-                sender: "currentUser",
-                status: 0
-            };
-            
-            setTickets(prev => [newTicket, ...prev]);
-            
-            setFormData({
-                title: "",
-                description: "",
-                recipient: "",
-                priority: "1",
-                status: 0
-            });
-            setShowForm(false);
-            setSubmitMessage("Ticket submitted successfully!");
-            setTimeout(() => setSubmitMessage(""), 3000);
-        } catch (error) {
-            console.error("Error submitting ticket:", error);
-            setSubmitMessage("Error submitting ticket");
-        }
+    const getUserName = (userId) => {
+        const user = users.find(u => u.id === userId);
+        return user ? user.name : "Unknown";
     };
 
     const handleEditTicket = (ticketId) => {
@@ -178,7 +185,8 @@ function Ticketing({ session }) {
                 description: ticket.description,
                 recipient: ticket.recipient,
                 priority: String(ticket.priority),
-                status: ticket.status
+                status: ticket.status,
+                assignedTeam: ticket.assignedTeam || "none"
             });
             setShowForm(true);
         }
@@ -207,7 +215,8 @@ function Ticketing({ session }) {
                 description: "",
                 recipient: "",
                 priority: "1",
-                status: 0
+                status: 0,
+                assignedTeam: "none"
             });
             setSubmitMessage("Ticket updated successfully!");
             setTimeout(() => setSubmitMessage(""), 3000);
@@ -217,358 +226,293 @@ function Ticketing({ session }) {
         }
     };
 
-    const getUserName = (userId) => {
-        const user = users.find(u => u.id === userId);
-        return user ? user.name : "Unknown";
-    };
-
-    const filteredTickets = filterTickets();
-    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedTickets = filteredTickets.slice(startIndex, startIndex + itemsPerPage);
-
     return (
         <>
-            {isAdmin ? (
-                <>
-                    <NavBarAdmin />
-                    <div className="main-content">
-                        <div className="full-page">
-                            <div className="ticket-div">
-                                {/* Top Bar with Filters and Buttons */}
-                                <div className="top-bar">
-                                    {/* Filter Dropdown */}
-                                    <div className="dropdown">
-                                        <button className="drop">Filter By (Dropdown)</button>
-                                        <div className="dropdown-content">
-                                            <div className="Section">
-                                                <h4>Status</h4>
-                                                <div className="Dropdowndiv">
-                                                    {[0, 1, 2, 3].map((status) => (
-                                                        <label key={status}>
-                                                            <input 
-                                                                type="checkbox" 
-                                                                checked={activeStatusFilters[status] || false}
-                                                                onChange={() => toggleStatusFilter(status)}
-                                                            />
-                                                            {statusLabels[status]}
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="Section">
-                                                <h4>Priority</h4>
-                                                <div className="Dropdowndiv">
-                                                    {[1, 2, 3, 4, 5].map((priority) => (
-                                                        <label key={priority}>
-                                                            <input 
-                                                                type="checkbox" 
-                                                                checked={activePriorityFilters[priority] || false}
-                                                                onChange={() => togglePriorityFilter(priority)}
-                                                            />
-                                                            Priority {priority}
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </div>
+            <NavBarAdmin />
+            <div className="main-content">
+                <div className="full-page">
+                    <div className="ticket-div">
+                        {/* Top Bar with Filters and Buttons */}
+                        <div className="top-bar">
+                            {/* Filter Dropdown */}
+                            <div className="dropdown">
+                                <button className="drop">Filter By (Dropdown)</button>
+                                <div className="dropdown-content">
+                                    <div className="Section">
+                                        <h4>Status</h4>
+                                        <div className="Dropdowndiv">
+                                            {[0, 1, 2, 3].map((status) => (
+                                                <label key={status}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={activeStatusFilters[status] || false}
+                                                        onChange={() => toggleStatusFilter(status)}
+                                                    />
+                                                    {statusLabels[status]}
+                                                </label>
+                                            ))}
                                         </div>
                                     </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="button-group">
-                                        <button 
-                                            className="button" 
-                                            onClick={() => {
-                                                setEditingTicketId(null);
-                                                setFormData({
-                                                    title: "",
-                                                    description: "",
-                                                    recipient: "",
-                                                    priority: "1",
-                                                    status: 0
-                                                });
-                                                setFormErrors({});
-                                                setShowForm(!showForm);
-                                            }}
-                                        >
-                                            <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="New" />
-                                            {showForm && !editingTicketId ? "Cancel" : "New Ticket"}
-                                        </button>
-                                        <button 
-                                            className="button" 
-                                            onClick={() => setShowForm(!showForm)}
-                                        >
-                                            <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="Edit" />
-                                            {showForm ? "Back to Table" : "Edit Ticket"}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Ticket Table */}
-                                <div className="ticket-table">
-                                    {/* Search and Entries */}
-                                    <div className="table-append">
-                                        <span>
-                                            Show entries:
-                                            <select 
-                                                className="input"
-                                                value={itemsPerPage}
-                                                onChange={(e) => {
-                                                    setItemsPerPage(Number(e.target.value));
-                                                    setCurrentPage(1);
-                                                }}
-                                            >
-                                                <option value="10">10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </span>
-                                        <span>
-                                            Search:
-                                            <input 
-                                                type="text" 
-                                                className="input"
-                                                placeholder="Search title or description"
-                                                value={searchTerm}
-                                                onChange={(e) => {
-                                                    setSearchTerm(e.target.value);
-                                                    setCurrentPage(1);
-                                                }}
-                                            />
-                                        </span>
-                                    </div>
-
-                                    {/* Table */}
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Title</th>
-                                                <th>Client</th>
-                                                <th>Description</th>
-                                                <th>Status</th>
-                                                <th>Priority</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {paginatedTickets.length > 0 ? (
-                                                paginatedTickets.map((ticket) => (
-                                                    <tr key={ticket.id}>
-                                                        <td>{ticket.title}</td>
-                                                        <td>{getUserName(ticket.sender)}</td>
-                                                        <td>{ticket.description}</td>
-                                                        <td>{statusLabels[ticket.status] || "Unknown"}</td>
-                                                        <td>{ticket.priority}</td>
-                                                        <td>
-                                                            <button 
-                                                                className="action-btn"
-                                                                onClick={() => handleEditTicket(ticket.id)}
-                                                            >
-                                                                Edit
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
-                                                        No tickets found
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-
-                                    {/* Pagination */}
-                                    <div className="table-append">
-                                        <p id="entryText">
-                                            Showing {filteredTickets.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredTickets.length)} of {filteredTickets.length} entries
-                                        </p>
-                                        <span className="pagination">
-                                            <button 
-                                                disabled={currentPage === 1}
-                                                onClick={() => setCurrentPage(currentPage - 1)}
-                                            >
-                                                Previous
-                                            </button>
-                                            <span className="page-number">
-                                                Page {currentPage} of {totalPages || 1}
-                                            </span>
-                                            <button 
-                                                disabled={currentPage === totalPages || totalPages === 0}
-                                                onClick={() => setCurrentPage(currentPage + 1)}
-                                            >
-                                                Next
-                                            </button>
-                                        </span>
+                                    <div className="Section">
+                                        <h4>Priority</h4>
+                                        <div className="Dropdowndiv">
+                                            {[1, 2, 3, 4, 5].map((priority) => (
+                                                <label key={priority}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={activePriorityFilters[priority] || false}
+                                                        onChange={() => togglePriorityFilter(priority)}
+                                                    />
+                                                    Priority {priority}
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Ticket Submission/Edit Form */}
-                        {showForm && (
-                            <div className="container">
-                                <h1>{editingTicketId ? "Edit Ticket" : "New Ticket Submission"}</h1>
-                                <form onSubmit={editingTicketId ? handleSaveEdit : handleSubmitTicket}>
-                                    <div className="form-group">
-                                        <label htmlFor="title">Title of Ticket *</label>
-                                        <input
-                                            type="text"
-                                            id="title"
-                                            name="title"
-                                            placeholder="Enter title"
-                                            value={formData.title}
-                                            onChange={handleFormChange}
-                                        />
-                                        {formErrors.title && <p className="error">{formErrors.title}</p>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="description">Description *</label>
-                                        <textarea
-                                            id="description"
-                                            name="description"
-                                            rows="4"
-                                            placeholder="Enter description"
-                                            value={formData.description}
-                                            onChange={handleFormChange}
-                                        ></textarea>
-                                        {formErrors.description && <p className="error">{formErrors.description}</p>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="recipient">Assign To *</label>
-                                        <select 
-                                            id="recipient" 
-                                            name="recipient" 
-                                            value={formData.recipient}
-                                            onChange={handleFormChange}
-                                        >
-                                            <option value="">Select a recipient</option>
-                                            {users.map((user) => (
-                                                <option key={user.id} value={user.id}>{user.name}</option>
-                                            ))}
-                                        </select>
-                                        {formErrors.recipient && <p className="error">{formErrors.recipient}</p>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="priority">Priority *</label>
-                                        <select 
-                                            id="priority" 
-                                            name="priority" 
-                                            value={formData.priority}
-                                            onChange={handleFormChange}
-                                        >
-                                            <option value="">Select Priority</option>
-                                            <option value="1">1 - Low</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3 - Medium</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5 - High</option>
-                                        </select>
-                                        {formErrors.priority && <p className="error">{formErrors.priority}</p>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="status">Status</label>
-                                        <select 
-                                            id="status" 
-                                            name="status" 
-                                            value={formData.status}
-                                            onChange={handleFormChange}
-                                        >
-                                            {Object.entries(statusLabels).map(([key, label]) => (
-                                                <option key={key} value={key}>{label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <button type="submit">
-                                        {editingTicketId ? "Update Ticket" : "Submit Ticket"}
+                            {/* Action Buttons */}
+                            <div className="button-group">
+                                <button 
+                                    className="button" 
+                                    onClick={() => {
+                                        setEditingTicketId(null);
+                                        setFormData({
+                                            title: "",
+                                            description: "",
+                                            recipient: "",
+                                            priority: "1",
+                                            status: 0,
+                                            assignedTeam: "none"
+                                        });
+                                        setFormErrors({});
+                                        setShowForm(!showForm);
+                                    }}
+                                >
+                                    <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="New" />
+                                    {showForm && !editingTicketId ? "Cancel" : "New Ticket"}
+                                </button>
+                                {isAdmin && (
+                                    <button 
+                                        className="button" 
+                                        onClick={() => setShowForm(!showForm)}
+                                    >
+                                        <img src="https://img.icons8.com/ios-filled/50/000000/edit--v1.png" alt="Edit" />
+                                        {showForm ? "Back to Table" : "Edit Ticket"}
                                     </button>
-                                    {submitMessage && <p className="success-message">{submitMessage}</p>}
-                                </form>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </>
-            ) : (
-                <>
-                    <NavBarAdmin />
-                    <div className="main-content">
-                        {/* Regular User View - Form Only */}
-                        <div className="container">
-                            <h1>Submit a Ticket</h1>
-                            <form onSubmit={handleSubmitTicket}>
-                                <div className="form-group">
-                                    <label htmlFor="title">Title of Ticket *</label>
-                                    <input
-                                        type="text"
-                                        id="title"
-                                        name="title"
-                                        placeholder="Enter title"
-                                        value={formData.title}
-                                        onChange={handleFormChange}
+                        </div>
+
+                        {/* Ticket Table */}
+                        <div className="ticket-table">
+                            {/* Search and Entries */}
+                            <div className="table-append">
+                                <span>
+                                    Show entries:
+                                    <select 
+                                        className="input"
+                                        value={itemsPerPage}
+                                        onChange={(e) => {
+                                            setItemsPerPage(Number(e.target.value));
+                                            setCurrentPage(1);
+                                        }}
+                                    >
+                                        <option value="10">10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </span>
+                                <span>
+                                    Search:
+                                    <input 
+                                        type="text" 
+                                        className="input"
+                                        placeholder="Search title or description"
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                            setSearchTerm(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
                                     />
-                                    {formErrors.title && <p className="error">{formErrors.title}</p>}
-                                </div>
+                                </span>
+                            </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="description">Description *</label>
-                                    <textarea
-                                        id="description"
-                                        name="description"
-                                        rows="4"
-                                        placeholder="Enter description"
-                                        value={formData.description}
-                                        onChange={handleFormChange}
-                                    ></textarea>
-                                    {formErrors.description && <p className="error">{formErrors.description}</p>}
-                                </div>
+                            {/* Table */}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Client</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Assigned Team</th>
+                                        {isAdmin && <th>Actions</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paginatedTickets.length > 0 ? (
+                                        paginatedTickets.map((ticket) => (
+                                            <tr key={ticket.id}>
+                                                <td>{ticket.title}</td>
+                                                <td>{getUserName(ticket.sender)}</td>
+                                                <td>{ticket.description}</td>
+                                                <td>{statusLabels[ticket.status] || "Unknown"}</td>
+                                                <td>{ticket.priority}</td>
+                                                <td>{ticket.assignedTeam}</td>
+                                                {isAdmin && (
+                                                    <td>
+                                                        <button 
+                                                            className="action-btn"
+                                                            onClick={() => handleEditTicket(ticket.id)}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={isAdmin ? 7 : 6} style={{ textAlign: "center", padding: "20px" }}>
+                                                No tickets found
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
 
-                                <div className="form-group">
-                                    <label htmlFor="recipient">Assign To *</label>
-                                    <select 
-                                        id="recipient" 
-                                        name="recipient" 
-                                        value={formData.recipient}
-                                        onChange={handleFormChange}
+                            {/* Pagination */}
+                            <div className="table-append">
+                                <p id="entryText">
+                                    Showing {filteredTickets.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredTickets.length)} of {filteredTickets.length} entries
+                                </p>
+                                <span className="pagination">
+                                    <button 
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(currentPage - 1)}
                                     >
-                                        <option value="">Select a recipient</option>
-                                        {users.map((user) => (
-                                            <option key={user.id} value={user.id}>{user.name}</option>
-                                        ))}
-                                    </select>
-                                    {formErrors.recipient && <p className="error">{formErrors.recipient}</p>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="priority">Priority *</label>
-                                    <select 
-                                        id="priority" 
-                                        name="priority" 
-                                        value={formData.priority}
-                                        onChange={handleFormChange}
+                                        Previous
+                                    </button>
+                                    <span className="page-number">
+                                        Page {currentPage} of {totalPages || 1}
+                                    </span>
+                                    <button 
+                                        disabled={currentPage === totalPages || totalPages === 0}
+                                        onClick={() => setCurrentPage(currentPage + 1)}
                                     >
-                                        <option value="">Select Priority</option>
-                                        <option value="1">1 - Low</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3 - Medium</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5 - High</option>
-                                    </select>
-                                    {formErrors.priority && <p className="error">{formErrors.priority}</p>}
-                                </div>
-
-                                <button type="submit">Submit Ticket</button>
-                                {submitMessage && <p className="success-message">{submitMessage}</p>}
-                            </form>
+                                        Next
+                                    </button>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </>
-            )}
+                </div>
+
+                {/* Ticket Submission/Edit Form */}
+                {showForm && (
+                    <div className="container">
+                        <h1>{editingTicketId ? "Edit Ticket" : "New Ticket Submission"}</h1>
+                        <form onSubmit={editingTicketId ? handleSaveEdit : handleSubmitTicket}>
+                            <div className="form-group">
+                                <label htmlFor="title">Title of Ticket *</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    placeholder="Enter title"
+                                    value={formData.title}
+                                    onChange={handleFormChange}
+                                />
+                                {formErrors.title && <p className="error">{formErrors.title}</p>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="description">Description *</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    rows="4"
+                                    placeholder="Enter description"
+                                    value={formData.description}
+                                    onChange={handleFormChange}
+                                ></textarea>
+                                {formErrors.description && <p className="error">{formErrors.description}</p>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="recipient">Assign To *</label>
+                                <select 
+                                    id="recipient" 
+                                    name="recipient" 
+                                    value={formData.recipient}
+                                    onChange={handleFormChange}
+                                >
+                                    <option value="">Select a recipient</option>
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>{user.name}</option>
+                                    ))}
+                                </select>
+                                {formErrors.recipient && <p className="error">{formErrors.recipient}</p>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="priority">Priority *</label>
+                                <select 
+                                    id="priority" 
+                                    name="priority" 
+                                    value={formData.priority}
+                                    onChange={handleFormChange}
+                                >
+                                    <option value="">Select Priority</option>
+                                    <option value="1">1 - Low</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 - Medium</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - High</option>
+                                </select>
+                                {formErrors.priority && <p className="error">{formErrors.priority}</p>}
+                            </div>
+
+                            <div className="form-.group">
+                                <label htmlFor="status">Status</label>
+                                <select 
+                                    id="status" 
+                                    name="status" 
+                                    value={formData.status}
+                                    onChange={handleFormChange}
+                                >
+                                    {Object.entries(statusLabels).map(([key, label]) => (
+                                        <option key={key} value={key}>{label}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {isAdmin && (
+                                <div className="form-group">
+                                    <label htmlFor="assignedTeam">Assigned Team</label>
+                                    <select 
+                                        id="assignedTeam" 
+                                        name="assignedTeam" 
+                                        value={formData.assignedTeam}
+                                        onChange={handleFormChange}
+                                    >
+                                        <option value="none">None</option>
+                                        <option value="fast to resolve">Fast to Resolve</option>
+                                        <option value="slow to resolve">Slow to Resolve</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            <button type="submit">
+                                {editingTicketId ? "Update Ticket" : "Submit Ticket"}
+                            </button>
+                            {submitMessage && <p className="success-message">{submitMessage}</p>}
+                        </form>
+                    </div>
+                )}
+            </div>
         </>
     );
 }

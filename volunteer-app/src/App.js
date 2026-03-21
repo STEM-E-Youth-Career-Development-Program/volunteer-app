@@ -41,10 +41,26 @@ function App() {
                 ): (
                     <>
                         <Route path="/" element={<Home />} />
-                        <Route path="/userpage" element={<AccPageOthers />} />
-                        <Route path="/samplepage" element={<SamplePage />} />
-                        <Route path="/ticketing" element={<Ticketing session={session} />} />
-                        <Route path="/supportform" element={<SupportForm />} />
+                        <Route path="/userpage" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <AccPageOthers />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/samplepage" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <SamplePage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/ticketing" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <Ticketing session={session} />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/supportform" element={
+                            <ProtectedRoute session={session} allowedRoles={['member', 'admin']}>
+                                <SupportForm />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/error" element={<ErrorPage />} />
                         
                         <Route path="/access" element={<AccessManagement />} />
