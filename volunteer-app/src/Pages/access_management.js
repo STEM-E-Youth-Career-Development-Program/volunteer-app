@@ -58,7 +58,12 @@ const AccessManagement = () => {
   }, [navigate]);
 
   const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
   const pageData = data.slice((page - 1) * pageSize, page * pageSize);
+
+  useEffect(() => {
+    setPage((currentPage) => Math.min(Math.max(currentPage, 1), totalPages));
+  }, [totalPages]);
 
   const handleCheckboxChange = (index, field) => {
     const absoluteIndex = (page - 1) * pageSize + index;
@@ -86,7 +91,7 @@ const AccessManagement = () => {
   };
 
   const handleNextPage = () => {
-    if (data.length > page * pageSize) setPage(page + 1);
+    if (page < totalPages) setPage(page + 1);
   };
 
   const handlePreviousPage = () => {
@@ -121,8 +126,8 @@ const AccessManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
+            {pageData.map((row) => (
+              <tr key={row.id}>
                 <td>{row.name.substring(0, row.name.lastIndexOf(" "))}</td>
                 <td>{row.name.split(" ").slice(-1)}</td>
                 <td>TBD</td>
@@ -155,9 +160,9 @@ const AccessManagement = () => {
         
         <div className="table-footer">
           <div className="pagination">
-            <button onClick={handlePreviousPage}>Previous</button>
+            <button onClick={handlePreviousPage} disabled={page === 1}>Previous</button>
             <span className="page-number" id="pageNumber">Page {page}</span>
-            <button onClick={handleNextPage}>Next</button>
+            <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
           </div>
           <button className="save-button" onClick={handleSave}>Save</button>
         </div>
