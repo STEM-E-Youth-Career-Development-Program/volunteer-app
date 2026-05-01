@@ -126,7 +126,7 @@ const AccessManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {pageData.map((row) => (
+            {pageData.map((row, index) => (
               <tr key={row.id}>
                 <td>{row.name.substring(0, row.name.lastIndexOf(" "))}</td>
                 <td>{row.name.split(" ").slice(-1)}</td>
