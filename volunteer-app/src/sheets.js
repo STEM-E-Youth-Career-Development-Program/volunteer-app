@@ -3,7 +3,7 @@ export const writeToGoogleSheet = async (spreadsheetId, name) => {
         const response = await fetch("http://localhost:5001/api/write-to-sheet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ spreadsheetId, name }), // Send only name to backend
+            body: JSON.stringify({ spreadsheetId, name }),
         });
 
         const data = await response.json();
