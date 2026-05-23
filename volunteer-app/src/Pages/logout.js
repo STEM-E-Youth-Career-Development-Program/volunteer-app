@@ -5,7 +5,8 @@ export default function Logout({ setSession }) {
     useEffect(() => {
         setSession(null);
         localStorage.removeItem('session');
-        navigate("/");
+        navigate("/", { replace: true });
     }, [setSession, navigate]);
-    
+
+    return null;
 }

@@ -91,21 +91,41 @@ export const Authenticate = ({ setSession }) => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
 
-        if (code) {
-            auth.getToken(code).then(async (token) => {
+        if (!code) {
+            return;
+        }
+
+        let isActive = true;
+
+        const completeAuthentication = async () => {
+            try {
+                const token = await auth.getToken(code);
                 const discordUser = await auth.getDiscordUser(token);
                 const userRoles = await auth.getUserRoles(discordUser.id);
+
+                if (!isActive) {
+                    return;
+                }
 
                 if (userRoles) {
                     const sessionData = { token, user: { ...userRoles, role: userRoles.role || 'member' } };
                     setSession(sessionData);
                     localStorage.setItem('session', JSON.stringify(sessionData));
-                    navigate('/');
+                    navigate('/', { replace: true });
                 } else {
-                    navigate('/permission-denied');
+                    navigate('/permission-denied', { replace: true });
                 }
-            });
-        }
+            } catch (error) {
+                console.error('Authentication failed:', error);
+                navigate('/login', { replace: true });
+            }
+        };
+
+        completeAuthentication();
+
+        return () => {
+            isActive = false;
+        };
     }, [navigate, setSession]);
 
     return <div>Authenticating...</div>;

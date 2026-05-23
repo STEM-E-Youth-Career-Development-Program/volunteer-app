@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     BrowserRouter as Router,
     Routes,
@@ -20,21 +20,31 @@ import Logout from "./Pages/logout";
 import Ticketing from "./Ticketing/Ticketing.js";
 import PermissionDenied from "./Pages/PermissionDenied.js";
 
+function getStoredSession() {
+    const storedSession = localStorage.getItem("session");
+
+    if (!storedSession) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(storedSession);
+    } catch {
+        localStorage.removeItem("session");
+        return null;
+    }
+}
+
 function App() {
-    const [session, setSession] = useState(null);
-    useEffect(() => {
-        const storedSession = JSON.parse(localStorage.getItem('session'));
-        if (storedSession) {
-            setSession(storedSession);
-        }
-    }, []);
-    const login = <Authenticate session={session} setSession={setSession} />
+    const [session, setSession] = useState(getStoredSession);
+    const isAuthenticated = Boolean(session);
+
     return <>
         <Router>
             <Routes>
-                <Route path="/login" element={login} />
+                <Route path="/login" element={<Authenticate setSession={setSession} />} />
                 <Route path="/permission-denied" element={<PermissionDenied />} />
-                {!session ? (
+                {!isAuthenticated ? (
                     <>
                         <Route path="/" element={<Login />} />
                     </>
@@ -50,9 +60,9 @@ function App() {
                         <Route path="/access" element={<AccessManagement />} />
                         <Route path="/members" element={<MemberTable />} />
                         <Route path="/logout" element={<Logout setSession={setSession} />} />
-                        <Route path="*" element={<Navigate to="/" />} />
                     </>
                 )}
+                <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
             </Routes>
         </Router>
     </>;
