@@ -64,9 +64,12 @@ span a{
 }
 
 .quick-links h5 {
-    background-color: #f7f7f7;
+    background-color: #e8e8e8;
     padding: 4% 3%;
     border-radius: 5px;
+    font-Size: 17px;
+    color: #333333;
+    margin-top: 15px;
 }
 
 .quick-links ul {
@@ -78,8 +81,10 @@ span a{
 }
 
 .quick-links ul li {
-    margin: 2% 0%;
+    margin: 10% 0%;
     margin-bottom: 15px;
+    margin-left: 15px;
+    color: #484848;
 }
 
 .quick-links ul li:last-child {
@@ -94,4 +99,21 @@ span a{
 .fa-brands, .fa-solid, .fa-regular {
     color: black;
     margin-right: 5%;
+}
+
+h4 {
+    color: #333333;
+    font-size: 20px;
+    margin-top: 15px;
+    text-decoration: underline;
+}
+
+ol li {
+    margin-top: 10px;
+    color: #333333;
+}
+
+div .quick-links {
+    background-color: #e8e8e8;
+    border-radius: 5px;
 }
