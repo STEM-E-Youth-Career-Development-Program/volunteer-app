@@ -1,5 +1,4 @@
-import "./navBarAdmin.css";
-import "./nav_bar.css"
+import "./navBarAdminDark.css";
 import UserMenu from './userMenu.js';
 
 function NavBarAdmin() {
