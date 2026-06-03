@@ -40,7 +40,14 @@
     margin-top: 3rem;
     width: 27%;
     min-width: 300px;
-    background-color: white;
+    background: linear-gradient(180deg, #111827, #0b1220);
+    color: #e5e7eb;
+}
+
+.container-user li {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d1d5db;
+    background: rgba(255, 255, 255, 0.03);
 }
 
  dialog {

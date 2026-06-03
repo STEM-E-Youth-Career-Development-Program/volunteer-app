@@ -1,27 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from "./firebase.js"
-import { collection, getDocs, deleteDoc, addDoc, doc, writeBatch, updateDoc, query, where } from "./index.js"
-
-async function findUser(dID, dName) {
-    try {
-        const colUser = collection(db, 'User');
-        const q = query(colUser, where("discordID", "==", String(dID)));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-            console.log("test");
-            const userDocRef = doc(db, 'User', snapshot.docs[0].id);
-            await updateDoc(userDocRef, { name: dName });
-            return snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
-        } else {
-            await addDoc(colUser, { discordID: dID, isAdmin: false, isCoord: false, isTicketing: false, name: dName })
-            return;
-        }
-    } catch (error) {
-        console.error("Error loading data:", error);
-        return [];
-    }
-}
+import { collection, getDocs, query, where } from "./index.js"
 
 export default class Oauth {
     constructor() {

@@ -2,14 +2,16 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: white;
+    background: #0b0f17;
+    color: #e5e7eb;
 }
 .support header {
-    background-color: #f0f0f0;
+    background: linear-gradient(180deg, #111827, #0b1220);
     padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .support .logo {
     height: 40px;
@@ -17,12 +19,12 @@
 .support nav a {
     margin-left: 20px;
     text-decoration: none;
-    color: black;
+    color: #d1d5db;
 }
 .support .user-icon {
     width: 30px;
     height: 30px;
-    background-color: #ccc;
+    background-color: #374151;
     border-radius: 50%;
 }
 
@@ -40,8 +42,10 @@
 .support input, .support textarea {
     margin-top: 5px;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 4px;
+    background: #111827;
+    color: #f3f4f6;
 }
 .support textarea {
     height: 100px;
@@ -49,7 +53,7 @@
 .support button {
     margin-top: 20px;
     padding: 10px;
-    background-color: black;
+    background-color: #f59e0b;
     color: white;
     border: none;
     border-radius: 4px;
@@ -60,7 +64,8 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: white;
+    background: #111827;
+    color: #e5e7eb;
     max-width: 600px;
     margin: 20px auto;
     padding: 20px;

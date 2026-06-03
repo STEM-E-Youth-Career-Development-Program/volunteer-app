@@ -10,7 +10,7 @@ import './App.css';
 import Login from "./Pages/loginform.js"
 import Home from "./Pages/home.js"
 import AccPageOthers from "./Pages/AccPageOthers.js";
-import SamplePage from "./Pages/SamplePage.js";
+import Resources from "./Pages/resources.js";
 import SupportForm from "./Pages/Supportform.js";
 import ErrorPage from "./Pages/ErrorPage.js"
 import AccessManagement from "./Pages/access_management";
@@ -42,7 +42,8 @@ function App() {
                     <>
                         <Route path="/" element={<Home />} />
                         <Route path="/userpage" element={<AccPageOthers />} />
-                        <Route path="/samplepage" element={<SamplePage />} />
+                        <Route path="/samplepage" element={<Resources />} />
+                        <Route path="/resources" element={<Resources />} />
                         <Route path="/ticketing" element={<Ticketing session={session} />} />
                         <Route path="/supportform" element={<SupportForm />} />
                         <Route path="/error" element={<ErrorPage />} />

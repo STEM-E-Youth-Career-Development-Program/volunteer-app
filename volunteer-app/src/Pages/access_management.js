@@ -33,7 +33,7 @@ const AccessManagement = () => {
       }
 
       if (!session) {
-        navigate('/loginform');
+        navigate('/login');
         return;
       }
 
@@ -93,6 +93,22 @@ const AccessManagement = () => {
     if (page > 1) setPage(page - 1);
   };
 
+  const splitName = (name = '') => {
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return { firstName: '', lastName: '' };
+    }
+
+    if (parts.length === 1) {
+      return { firstName: parts[0], lastName: '' };
+    }
+
+    return {
+      firstName: parts.slice(0, -1).join(' '),
+      lastName: parts.at(-1) || ''
+    };
+  };
+
   if (loading) return null;
 
   return (
@@ -121,10 +137,13 @@ const AccessManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
+              {pageData.map((row, index) => {
+                const { firstName, lastName } = splitName(row.name);
+
+                return (
               <tr key={index}>
-                <td>{row.name.substring(0, row.name.lastIndexOf(" "))}</td>
-                <td>{row.name.split(" ").slice(-1)}</td>
+                <td>{firstName}</td>
+                <td>{lastName}</td>
                 <td>TBD</td>
                 <td>{row.discordID}</td>
                 <td>
@@ -149,7 +168,8 @@ const AccessManagement = () => {
                   />
                 </td>
               </tr>
-            ))}
+                );
+              })}
           </tbody>
         </table>
         

@@ -1,160 +1,130 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './home.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faHouse, faCalendarDays, faMobile, faGlobe, faMagnifyingGlass, faUsers, faMap, faChalkboardUser, faGamepad, faRobot, faHashtag, faInfo, faPhone, faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
-import { faFacebookF, faInstagram, faTwitter, faYoutube, faDiscord, faTiktok, faLinkedinIn, faFlickr, faSpotify } from '@fortawesome/free-brands-svg-icons';
+import { faHouse, faCalendarDays, faGlobe, faMagnifyingGlass, faUsers, faChalkboardUser, faInfo, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faFacebookF, faInstagram, faYoutube, faDiscord } from '@fortawesome/free-brands-svg-icons';
 import NavBarAdmin from './navBarAdmin';
-
-const carouselItems = [
+const updateCards = [
     {
         title: "What's going on at STEM-E?",
-        points: ['Point 1', 'Point 2', 'Point 3', 'Point 4', 'Point 5']
+        points: ['', '', '', '', '']
     },
     {
-        title: 'Attend TownHall',
-        points: []
+        title: 'Attend Townhall at STEM-E',
+        copy: "Thank you for choosing to volunteer with STEM-E. We're excited to have you join our incredible community and can't wait to onboard you."
     },
     {
         title: 'STEM-E In-Person Events',
-        points: ['Point 1', 'Point 2', 'Point 3', 'Point 4', 'Point 5']
+        copy: "Thank you for choosing to volunteer with STEM-E. We're excited to have you join our incredible community and can't wait to onboard you."
     },
     {
-        title: 'Feedback process at STEM-E',
-        points: ['Point 1', 'Point 2', 'Point 3', 'Point 4', 'Point 5']
+        title: 'Feedback Process at STEM-E',
+        copy: "Thank you for choosing to volunteer with STEM-E. We're excited to have you join our incredible community and can't wait to onboard you."
     },
     {
-        title: 'Have you signed-up for PVSA?',
-        points: ['Point 1', 'Point 2', 'Point 3', 'Point 4', 'Point 5']
+        title: 'Have you signed up for PVSA?',
+        copy: ''
     }
 ];
 
-const Updates = ({ title, points }) => (
-    <article className="carousel-card">
+const quickLinkGroups = [
+    {
+        title: 'Intern Documents',
+        items: [
+            { icon: faHouse, label: 'The STEME Experience', href: '#' },
+            { icon: faCalendarDays, label: 'Time Sheets', href: 'https://docs.google.com/spreadsheets/d/1kD-nnEYOemDGeAIEYRZbJ56RgxdV-SYAes-WGX9EviY/edit?gid=0#gid=0' },
+        ],
+    },
+    {
+        title: 'STEME Apps',
+        items: [
+            { icon: faGlobe, label: 'STEM-E Website', href: 'https://www.steme.org/' },
+            { icon: faMagnifyingGlass, label: 'Career App', href: '/samplepage' },
+            { icon: faUsers, label: 'Member App', href: '/samplepage' },
+            { icon: faChalkboardUser, label: 'Tutor App', href: '/samplepage' },
+        ],
+    },
+    {
+        title: 'STEM-E Social',
+        items: [
+            { icon: faDiscord, label: 'Discord', href: 'https://discord.gg/R9NKY7rjTj', brand: true },
+            { icon: faYoutube, label: 'Youtube', href: 'https://www.youtube.com/@stem-e', brand: true },
+            { icon: faInstagram, label: 'Instagram', href: 'https://www.instagram.com/steme.ycdp/', brand: true },
+            { icon: faFacebookF, label: 'Facebook', href: 'https://www.facebook.com/STEMEYouthCareerDevelopmentProgram/', brand: true },
+        ],
+    },
+    {
+        title: 'Others',
+        items: [
+            { icon: faInfo, label: 'Surveys and Nominations', href: '#' },
+            { icon: faInfo, label: 'FAQs', href: '#' },
+            { icon: faPhone, label: 'Contact Us', href: '/supportform' },
+        ],
+    },
+];
+
+const UpdatesCard = ({ title, points = [], copy }) => (
+    <article className="content-card">
         <h2>{title}</h2>
         {points.length > 0 ? (
-            <ol>
+            <ol className="number-list">
                 {points.map((point, index) => (
-                    <li key={index}>{point}</li>
+                    <li key={index}>
+                        <span>{point}</span>
+                    </li>
                 ))}
             </ol>
         ) : (
-            <p className="empty-state">Coming soon — stay tuned for the next update.</p>
+            <p>{copy}</p>
         )}
     </article>
 );
 
-const QuickLinksSection = () => (
-    <section className="quicklinks-block reveal-card">
-        <div className="section-title-row">
-            <h4>Quick Links</h4>
-        </div>
-        <div className="quicklinks-grid">
-            <div className="link-group">
-                <h5><FontAwesomeIcon icon={faFile} /> Intern Documents</h5>
-                <ul>
-                    <li><FontAwesomeIcon icon={faHouse} /> The STEME Experience</li>
-                    <li><a href="https://docs.google.com/spreadsheets/d/1kD-nnEYOemDGeAIEYRZbJ56RgxdV-SYAes-WGX9EviY/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faCalendarDays} /> Time Sheets</a></li>
-                </ul>
-            </div>
-            <div className="link-group">
-                <h5><FontAwesomeIcon icon={faMobile} /> STEME Apps</h5>
-                <ul>
-                    <li><a href="https://www.steme.org/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faGlobe} /> Website</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faMagnifyingGlass} /> Career App</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faUsers} /> Member App</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faMap} /> Map App</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faChalkboardUser} /> Tutor App</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faGamepad} /> Game App</a></li>
-                    <li><a href="/samplepage"><FontAwesomeIcon icon={faRobot} /> Note Sage App</a></li>
-                </ul>
-            </div>
-            <div className="link-group">
-                <h5><FontAwesomeIcon icon={faHashtag} /> STEM-E Social Media</h5>
-                <ul>
-                    <li><a href="https://www.facebook.com/STEMEYouthCareerDevelopmentProgram/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faFacebookF} /> Facebook</a></li>
-                    <li><a href="https://www.instagram.com/steme.ycdp/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faInstagram} /> Instagram</a></li>
-                    <li><a href="https://x.com/steme_ycdp" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faTwitter} /> Twitter</a></li>
-                    <li><a href="https://www.youtube.com/@stem-e" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faYoutube} /> YouTube</a></li>
-                    <li><a href="https://discord.gg/R9NKY7rjTj" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faDiscord} /> Discord</a></li>
-                    <li><a href="https://www.tiktok.com/@stem_e" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faTiktok} /> TikTok</a></li>
-                    <li><a href="https://www.linkedin.com/company/steme-youth-career-development-program/mycompany/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faLinkedinIn} /> LinkedIn</a></li>
-                    <li><a href="https://www.flickr.com/photos/steme-ycdp/" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faFlickr} /> Flickr</a></li>
-                    <li><a href="https://open.spotify.com/show/3ScxdUY1xh4FtApzh8NqOc" target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faSpotify} /> Spotify</a></li>
-                </ul>
-            </div>
-        </div>
-    </section>
-);
-
-const FooterSection = () => (
-    <section className="footer-section reveal-card">
-        <div className="footer-main">
-            <div className="footer-support">
-                <h4>Need help?</h4>
-                <ul>
-                    <li><FontAwesomeIcon icon={faInfo} /> <a href="#">FAQ</a></li>
-                    <li><FontAwesomeIcon icon={faPhone} /> <a href="#">Contact Us</a></li>
-                </ul>
-            </div>
-            <div className="footer-extra">
-                <h4>Other links</h4>
-                <ul>
-                    <li><FontAwesomeIcon icon={faInfo} /> Surveys & Nominations</li>
-                    <li><FontAwesomeIcon icon={faInfo} /> Account</li>
-                    <li><FontAwesomeIcon icon={faInfo} /> Support</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-);
-
-const HeroSection = () => (
-    <section className="hero-section reveal-hero">
-        <div className="hero-graphic-wrapper">
-            <img
-                src="https://static.wixstatic.com/media/8c1082_500d66cd227a4dfab9a7361dcbbabadb~mv2.png/v1/fit/w_2500,h_1330,al_c/8c1082_500d66cd227a4dfab9a7361dcbbabadb~mv2.png"
-                alt="STEM-E logo"
-                className="hero-logo"
-            />
-        </div>
-    </section>
-);
-
-const CarouselSection = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const length = carouselItems.length;
-    const visibleItems = [0, 1, 2].map((position) => carouselItems[(currentIndex + position) % length]);
-
+const Home = () => {
     return (
-        <section className="carousel-section reveal-card" id="main-content">
-            <div className="section-title-row">
-                <h4>Latest updates</h4>
-                <div className="carousel-controls">
-                    <button className="carousel-control" onClick={() => setCurrentIndex((currentIndex - 1 + length) % length)} aria-label="Previous">
-                        &lt;
-                    </button>
-                    <button className="carousel-control" onClick={() => setCurrentIndex((currentIndex + 1) % length)} aria-label="Next">
-                        &gt;
-                    </button>
-                </div>
-            </div>
-            <div className="carousel-track">
-                {visibleItems.map((item) => (
-                    <Updates key={item.title} title={item.title} points={item.points} />
-                ))}
-            </div>
-        </section>
+        <div className="home-page">
+            <NavBarAdmin />
+
+            <main className="home-layout">
+                <section className="home-feed" id="main-content">
+                    <UpdatesCard {...updateCards[0]} />
+
+                    <div className="two-column-row">
+                        <UpdatesCard {...updateCards[1]} />
+                        <UpdatesCard {...updateCards[2]} />
+                    </div>
+
+                    <div className="two-column-row bottom-row">
+                        <UpdatesCard {...updateCards[3]} />
+                        <UpdatesCard {...updateCards[4]} />
+                    </div>
+                </section>
+
+                <aside className="quick-links-panel" aria-label="Quick links">
+                    <h3>Quick Links</h3>
+                    <div className="link-stack">
+                        {quickLinkGroups.map((group) => (
+                            <section key={group.title} className="link-group">
+                                <div className="link-group-title">
+                                    <span>{group.title}</span>
+                                </div>
+                                <ul>
+                                    {group.items.map((item) => (
+                                        <li key={item.label}>
+                                            <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                                                <FontAwesomeIcon icon={item.icon} className={item.brand ? 'brand-icon' : ''} />
+                                                <span>{item.label}</span>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        ))}
+                    </div>
+                </aside>
+            </main>
+        </div>
     );
 };
-
-const Home = () => (
-    <div className="home-page">
-        <NavBarAdmin />
-        <HeroSection />
-        <CarouselSection />
-        <QuickLinksSection />
-        <FooterSection />
-    </div>
-);
 
 export default Home;

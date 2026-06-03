@@ -1,14 +1,26 @@
 .nav-bar {
-    background: rgba(10, 18, 28, 0.96);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-    padding: 1rem 2rem;
-    display: flex;
+    background: #000000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 0 1.75rem;
+    min-height: 84px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
     position: sticky;
     top: 0;
     z-index: 60;
+    transition: background 200ms ease, border-color 200ms ease;
+}
+
+.nav-bar.theme-dark {
+    background: #000000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.nav-bar.theme-light {
+    background: #000000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .nav-bar .logo {
@@ -17,24 +29,37 @@
 }
 
 .nav-bar .logo img {
-    width: 140px;
+    width: 118px;
     height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
 }
 
 .nav-bar .menu {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 3rem;
     align-items: center;
 }
 
 .nav-bar .menu span,
 .nav-bar .menu a {
-    color: #e2e8f0;
-    font-size: 0.98rem;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1rem;
     text-decoration: none;
+    line-height: 1;
+}
+
+.nav-bar.theme-dark .menu span,
+.nav-bar.theme-dark .menu a,
+.nav-bar.theme-dark .menu span a {
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.nav-bar.theme-light .menu span,
+.nav-bar.theme-light .menu a,
+.nav-bar.theme-light .menu span a {
+    color: rgba(255, 255, 255, 0.86);
 }
 
 .nav-bar .menu a:hover,
@@ -42,9 +67,16 @@
     color: #ffffff;
 }
 
+.nav-bar.theme-light .menu a:hover,
+.nav-bar.theme-light .menu a:focus-visible,
+.nav-bar.theme-light .menu span a:hover {
+    color: #ffffff;
+}
+
 .nav-bar .account {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 }
 
 .nav-bar .menu span {
@@ -53,7 +85,7 @@
 }
 
 .nav-bar .menu span a {
-    color: #e2e8f0;
+    color: rgba(255, 255, 255, 0.86);
 }
 
 .nav-bar .menu span a:hover {
@@ -62,9 +94,10 @@
 
 @media (max-width: 840px) {
     .nav-bar {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
+        justify-items: center;
         padding: 1rem;
+        min-height: auto;
     }
 
     .nav-bar .menu {

@@ -142,12 +142,12 @@ select {
     padding: 12px 20px;
     border: none;
     border-radius: 12px;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(180deg, #111827, #0b1220);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
-    color: black;
+  color: #f3f4f6;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
@@ -169,16 +169,17 @@ select {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
+          background: #0b0f17;
+          color: #e5e7eb;
         }
 
         .container {
             max-width: 800px;
             margin: 50px auto;
-            background: #fff;
+          background: linear-gradient(180deg, #111827, #0b1220);
+          color: #e5e7eb;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
             padding: 20px;
         }
 
@@ -235,11 +236,11 @@ select {
 .reassign-panel {
   min-width: 220px;
   max-width: 260px;
-  background: white;
-  border: 1.5px solid #4fc3f7;
+  background: linear-gradient(180deg, #111827, #0b1220);
+  border: 1.5px solid rgba(79, 195, 247, 0.55);
   border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0px 0px 10px lightgray;
+  box-shadow: 0px 16px 32px rgba(0, 0, 0, 0.26);
   flex-shrink: 0;
 }
 

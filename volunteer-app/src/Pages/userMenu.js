@@ -8,7 +8,7 @@ function UserMenu() {
             <div className="dropdown-content">
                 <div className="dropdown-row">
                     <FontAwesomeIcon icon={faHouse} />
-                    <a href="#">Account</a>
+                    <a href="/userpage">Account</a>
                 </div>
                 <div className="dropdown-row">
                     <FontAwesomeIcon icon={faHeadset} />
@@ -16,11 +16,11 @@ function UserMenu() {
                 </div>
                 <div className="dropdown-row">
                     <FontAwesomeIcon icon={faCircleInfo} />
-                    <a href="#">FAQ</a>
+                    <a href="/resources">FAQ</a>
                 </div>
                 <div className="dropdown-row">
                     <FontAwesomeIcon icon={faEnvelope} />
-                    <a href="#">Contact us</a>
+                    <a href="/supportform">Contact us</a>
                 </div>
                 <div className="dropdown-row">
                     <FontAwesomeIcon icon={faRightFromBracket} />

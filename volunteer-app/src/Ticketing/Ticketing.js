@@ -1,5 +1,5 @@
 // latest version
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import NavBarAdmin from "../Pages/navBarAdmin";
 import "./Ticketing.css"
 import { db } from "../firebase.js"
@@ -34,21 +34,9 @@ async function loadUsers() {
     }
 }
 
-async function getName(userData, id) {
-    const res = await Promise.all(userData
-        .filter(user => user.id === id)
-        .map(async (user) => {
-            return [user.id, user.name];
-        })
-    );
-    return res;
-}
-
 function Ticketing({ session }) {
     // Determine if user is admin - check multiple possible fields
     const isAdmin = session?.user?.isAdmin === true || session?.user?.role === 'admin' || session?.user?.isTicketing === true;
-    const currentUserId = session?.user?.discordID;
-    
     // Debug logging
    // console.log('Ticketing.js - Session:', session);
     //console.log('Ticketing.js - Is Admin:', isAdmin);
@@ -58,7 +46,6 @@ function Ticketing({ session }) {
     const [editingTicketId, setEditingTicketId] = useState(null);
     const [tickets, setTickets] = useState([]);
     const [users, setUsers] = useState([]);
-    const [clientNames, setClientNames] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -78,6 +65,7 @@ function Ticketing({ session }) {
     
     const [formErrors, setFormErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState("");
+    const theme = "dark";
 
     useEffect(() => {
         const fetchTicket = async () => {
@@ -105,20 +93,6 @@ function Ticketing({ session }) {
         };
         fetchUsers();
     }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const promises = tickets.map(async (row) => {
-                const output = await getName(users, row.sender);
-                return output;
-            });
-
-            const names = await Promise.all(promises);
-            setClientNames(names);
-            console.log(clientNames);
-        };
-        fetchData();
-    }, [tickets, users]);
 
     // Save tickets to localStorage whenever they change
     useEffect(() => {
@@ -265,7 +239,8 @@ function Ticketing({ session }) {
 
     return (
         <>
-            <NavBarAdmin />
+            <div className={`ticketing-page ${theme === "dark" ? "theme-dark" : "theme-light"}`}>
+            <NavBarAdmin theme={theme} />
             <div className="main-content">
                 <div className="full-page">
                     <div className="ticket-div">
@@ -532,6 +507,7 @@ function Ticketing({ session }) {
                         </form>
                     </div>
                 )}
+            </div>
             </div>
         </>
     );
