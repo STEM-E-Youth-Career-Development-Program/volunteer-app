@@ -40,3 +40,7 @@
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+nav ul li a {
+    color: white !important;
+}

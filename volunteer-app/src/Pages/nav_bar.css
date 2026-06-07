@@ -38,15 +38,16 @@ body {
 }
 
 .menu a{
-    color: black;
+    color: rgb(255, 255, 255);
+    text-decoration: none;
 }
 
 .menu-item {
     font-size: 18px;
     cursor: pointer;
-    color: #000;
+    color: #ffffff;
 }
 
 .menu-item:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }

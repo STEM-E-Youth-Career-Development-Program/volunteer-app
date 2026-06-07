@@ -48,13 +48,13 @@ button {
 }
 
 button[name="Yes"] {
-    background-color: #049F14;
+    background-color: #e7e7e7;
     color: white;
     font-family: Inter;
 }
 
 button[name="No"] {
-    background-color: #FF0000;
+    background-color: #f1f1f1;
     color: white;
     font-family: Inter;
 }
